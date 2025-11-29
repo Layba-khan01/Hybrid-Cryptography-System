@@ -33,11 +33,15 @@ A production-grade hybrid cryptography system implemented in Python 3 using PyCr
 
 ```
 crypto_engine/
-  └─ hybrid_crypto.py
+  └─ hybrid_crypto.py          # Core cryptographic engine
 examples/
-  └─ demo.py
+  └─ demo.py                    # Working demonstration
+  └─ run_full_protocol_demo.py  # Alternative demo runner
 keys/
   └─ (generated keys at runtime)
+scripts/
+  └─ cleanup_docs_and_keys.ps1  # Repository cleanup utility
+app.py                            # CLI wrapper (Click framework)
 README.md
 TECHNICAL_OVERVIEW.md
 QUICKSTART.md
@@ -62,9 +66,55 @@ cd Hybrid-Cryptography-System
 pip install -r requirements.txt
 ```
 
+3. (Optional) Install Click for CLI wrapper:
+```bash
+pip install click
+```
+
 ## Usage
 
-### Basic Usage
+### Option 1: CLI (Recommended for Most Users)
+
+The `app.py` CLI wrapper provides three simple commands: `generate-keys`, `encrypt`, and `decrypt`.
+
+#### Generate Keys
+```powershell
+# Generate keys for sender (prompts for passphrase)
+python app.py generate-keys --output ./keys --role sender
+
+# Generate keys for receiver
+python app.py generate-keys --output ./keys --role receiver
+```
+
+#### Encrypt a File
+```powershell
+# Encrypt a file (prompts for sender's passphrase)
+python app.py encrypt `
+  --plaintext-file examples/sample_message.txt `
+  --receiver-public-key ./keys/receiver/public_key.pem `
+  --sender-private-key ./keys/sender/private_key_encrypted.json `
+  --output-file examples/message_encrypted.json
+```
+
+#### Decrypt a File
+```powershell
+# Decrypt a file (prompts for receiver's passphrase)
+python app.py decrypt `
+  --ciphertext-file examples/message_encrypted.json `
+  --receiver-private-key ./keys/receiver/private_key_encrypted.json `
+  --sender-public-key ./keys/sender/public_key.pem `
+  --output-file examples/message_decrypted.txt
+```
+
+#### View Help
+```powershell
+python app.py --help
+python app.py generate-keys --help
+python app.py encrypt --help
+python app.py decrypt --help
+```
+
+### Option 2: Python API (Programmatic Access)
 
 ```python
 from crypto_engine import (

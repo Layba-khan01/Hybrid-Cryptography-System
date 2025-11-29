@@ -1,5 +1,12 @@
 # Quick Start Guide
 
+## Table of Contents
+- [Installation](#installation)
+- [CLI Quick Start](#cli-quick-start)
+- [Python API Quick Start](#python-api-quick-start)
+- [Running the Demo](#running-the-demo)
+- [Troubleshooting](#troubleshooting)
+
 ## Installation
 
 1. **Install Python 3.7+**
@@ -12,49 +19,58 @@
    pip install -r requirements.txt
    ```
 
-## Running the Demo
+3. **Install Click (for CLI)**
+   ```bash
+   pip install click
+   ```
 
-The fastest way to see the system in action:
+## CLI Quick Start
 
-```bash
-cd examples
-python demo.py
+The fastest way to get started is using the `app.py` CLI wrapper.
+
+### Generate Keys
+
+```powershell
+# Generate sender keys (you'll be prompted for a passphrase)
+python app.py generate-keys --output ./keys --role sender
+
+# Generate receiver keys
+python app.py generate-keys --output ./keys --role receiver
 ```
 
-This will:
-- Generate RSA-4096 keys for sender and receiver
-- Create a sample encrypted message
-- Decrypt it and verify authenticity
-- Demonstrate tampering detection
+### Encrypt a File
 
-## Basic Usage Example
+```powershell
+python app.py encrypt `
+  --plaintext-file examples/sample_message.txt `
+  --receiver-public-key ./keys/receiver/public_key.pem `
+  --sender-private-key ./keys/sender/private_key_encrypted.json `
+  --output-file examples/message_encrypted.json
+```
 
-Create a new Python script:
+When prompted, enter the sender's passphrase.
+
+### Decrypt a File
+
+```powershell
+python app.py decrypt `
+  --ciphertext-file examples/message_encrypted.json `
+  --receiver-private-key ./keys/receiver/private_key_encrypted.json `
+  --sender-public-key ./keys/sender/public_key.pem `
+  --output-file examples/message_decrypted.txt
+```
+
+When prompted, enter the receiver's passphrase.
+
+---
+
+## Python API Quick Start
+
+For programmatic integration, use the Python API directly.
+
+### Encrypt the File (API)
 
 ```python
-from crypto_engine import (
-    generate_rsa_keypair,
-    encrypt_file,
-    decrypt_file,
-    load_private_key
-)
-
-# Step 1: Generate keys
-print("Generating RSA-4096 keys...")
-alice_keys = generate_rsa_keypair(
-    passphrase="alice_secret_passphrase",
-    output_dir="./alice_keys"
-)
-
-bob_keys = generate_rsa_keypair(
-    passphrase="bob_secret_passphrase",
-    output_dir="./bob_keys"
-)
-
-# Step 2: Create a file to encrypt
-with open("secret.txt", "w") as f:
-    f.write("This is a secret message for Bob")
-
 # Step 3: Alice encrypts a message for Bob
 print("Encrypting message...")
 encrypted_msg = encrypt_file(
@@ -66,7 +82,11 @@ encrypted_msg = encrypt_file(
 # Step 4: Save encrypted message
 from crypto_engine import save_encrypted_file
 save_encrypted_file(encrypted_msg, "secret_encrypted.json")
+```
 
+### Decrypt the File (API)
+
+```python
 # Step 5: Bob decrypts the message
 print("Decrypting message...")
 bob_private_key = load_private_key(
@@ -85,6 +105,24 @@ decrypted = decrypt_file(
 
 print("Decrypted message:", decrypted.decode())
 ```
+
+---
+
+## Running the Demo
+
+The fastest way to see the full system in action:
+
+```bash
+python examples/demo.py
+```
+
+This will:
+- Generate RSA-4096 keys for sender and receiver
+- Create a sample encrypted message
+- Decrypt it and verify authenticity
+- Demonstrate tampering detection
+
+---
 
 ## What's Happening
 

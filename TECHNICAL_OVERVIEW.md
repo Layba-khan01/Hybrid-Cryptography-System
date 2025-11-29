@@ -363,4 +363,140 @@ This section consolidates concrete implementation notes, function signatures and
 
 ---
 
+## CLI Interface (app.py)
+
+The system provides a command-line wrapper built with the Click framework for user-friendly interaction without direct Python programming.
+
+### Command Structure
+
+```
+python app.py COMMAND [OPTIONS]
+python app.py --help              # Show all commands
+```
+
+### Commands and Options
+
+#### 1. generate-keys
+Generates an RSA-4096 keypair and saves it (encrypted with passphrase) to disk.
+
+**Usage:**
+```bash
+python app.py generate-keys --output ./keys --role sender
+```
+
+**Options:**
+- `--output` (Required): Directory where keypair will be stored
+- `--role` (Required): One of `sender` or `receiver`
+- `--passphrase`: Interactive prompt for passphrase (hidden input, confirmation required)
+
+**Output:**
+- Creates subdirectory: `./keys/{role}/`
+- Files: `private_key_encrypted.json`, `public_key.pem`
+
+**Error Handling:**
+- Exit code 1: Invalid directory or permission denied
+- Exit code 2: Unexpected system error
+
+---
+
+#### 2. encrypt
+Encrypts a plaintext file using hybrid encryption (AES-256-GCM + RSA-4096-OAEP + RSA-4096-PSS signatures).
+
+**Usage:**
+```bash
+python app.py encrypt \
+  --plaintext-file examples/sample_message.txt \
+  --receiver-public-key ./keys/receiver/public_key.pem \
+  --sender-private-key ./keys/sender/private_key_encrypted.json \
+  --output-file examples/message_encrypted.json
+```
+
+**Options:**
+- `--plaintext-file` (Required): Path to file containing message to encrypt
+- `--receiver-public-key` (Required): Path to receiver's public key (PEM format)
+- `--sender-private-key` (Required): Path to sender's encrypted private key (JSON)
+- `--output-file` (Required): Where to save encrypted package (JSON)
+- `--passphrase`: Interactive prompt for sender's private key passphrase (hidden input)
+
+**Output:**
+- JSON file containing: `ciphertext`, `iv`, `auth_tag`, `encrypted_key`, `signature`
+- All binary data hex-encoded for JSON portability
+
+**Error Handling:**
+- Exit code 1: File I/O error, key format error
+- Exit code 2: Key import failed
+- Exit code 3: Should not occur during encryption (validation only)
+
+---
+
+#### 3. decrypt
+Decrypts a ciphertext file and verifies sender's signature and data authenticity.
+
+**Usage:**
+```bash
+python app.py decrypt \
+  --ciphertext-file examples/message_encrypted.json \
+  --receiver-private-key ./keys/receiver/private_key_encrypted.json \
+  --sender-public-key ./keys/sender/public_key.pem \
+  --output-file examples/message_decrypted.txt
+```
+
+**Options:**
+- `--ciphertext-file` (Required): Path to encrypted package (JSON)
+- `--receiver-private-key` (Required): Path to receiver's encrypted private key (JSON)
+- `--sender-public-key` (Required): Path to sender's public key (PEM)
+- `--output-file` (Required): Where to save decrypted message
+- `--passphrase`: Interactive prompt for receiver's private key passphrase (hidden input)
+
+**Output:**
+- Plaintext file with decrypted message
+
+**Error Handling:**
+- Exit code 1: File I/O error, key format error, invalid JSON
+- Exit code 2: Key import failed
+- Exit code 3: **Critical tamper detection** — Raised when:
+  - RSA-PSS signature verification fails (sender authentication failed)
+  - AES-256-GCM authentication tag verification fails (data was modified)
+  - Message: `ERROR: Data Tampered or Invalid Signature!`
+
+---
+
+### Passphrase Handling
+
+**Security Features:**
+- Passphrases entered interactively are hidden from terminal display (no echo)
+- No passphrase arguments accepted on command line (prevents shell history exposure)
+- Confirmation required on `generate-keys` to prevent typos
+- Passphrases are never logged or displayed in error messages
+
+**Workflow:**
+```bash
+$ python app.py encrypt --plaintext-file msg.txt --receiver-public-key bob_pub.pem --sender-private-key alice_priv.json --output-file out.json
+Enter passphrase (for alice_priv.json): <hidden>
+Encrypting...
+Done!
+```
+
+---
+
+### Exit Codes
+
+| Code | Meaning | Common Causes |
+|------|---------|---------------|
+| 0 | Success | Operation completed without errors |
+| 1 | General error | File not found, invalid format, permission denied, I/O error |
+| 2 | Import/key error | Private key passphrase incorrect, corrupted key file, invalid PEM |
+| 3 | Tampering detected | Signature verification failed OR authentication tag mismatch |
+
+---
+
+### Integration with Python API
+
+The CLI commands call the same underlying `crypto_engine` functions as direct Python code:
+- `generate_keys()` → `generate_rsa_keypair()`
+- `encrypt()` → `load_private_key()` + `encrypt_file()` + `save_encrypted_file()`
+- `decrypt()` → `load_private_key()` + `load_encrypted_file()` + `decrypt_file()`
+
+---
+
 For more concrete examples and usage patterns, consult `examples/demo.py` and the `crypto_engine/hybrid_crypto.py` docstrings.
