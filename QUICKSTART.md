@@ -265,26 +265,34 @@ pip install -r requirements.txt
 ## File Structure After Running Demo
 
 ```
-project/
+Hybrid-Cryptography-System/
 ├── crypto_engine/
 │   ├── __init__.py
-│   └── hybrid_crypto.py
+│   └── hybrid_crypto.py              # Core engine (Base64 encoding)
 ├── examples/
-│   ├── demo.py
-│   ├── sample_message.txt         ← Generated
-│   ├── message_encrypted.json     ← Generated
-│   └── message_decrypted.txt      ← Generated
-├── keys/
+│   ├── demo.py                       # Main demonstration
+│   ├── sample_message.txt            # Generated test message
+│   ├── message_encrypted.json        # Generated encrypted package (Base64)
+│   └── message_decrypted.txt         # Generated decrypted output
+├── keys/                             # Generated at runtime
 │   ├── sender/
 │   │   ├── private_key_encrypted.json
 │   │   └── public_key.pem
 │   └── receiver/
 │       ├── private_key_encrypted.json
 │       └── public_key.pem
-├── requirements.txt
-├── README.md
-└── TECHNICAL_OVERVIEW.md
+├── scripts/
+│   └── cleanup_docs_and_keys.ps1     # Repository cleanup utility
+├── app.py                            # CLI wrapper (Click framework)
+├── requirements.txt                  # Dependencies (pycryptodomex, click)
+├── README.md                         # Complete API documentation
+├── TECHNICAL_OVERVIEW.md             # Cryptographic deep dive
+├── QUICKSTART.md                     # This file
+├── DELIVERABLES.md                   # Requirements checklist
+└── LICENSE                           # MIT License
 ```
+
+**Note:** All binary data in encrypted packages is **Base64-encoded** for JSON serialization and API safety.
 
 ## Next Steps
 

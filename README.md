@@ -32,20 +32,32 @@ A production-grade hybrid cryptography system implemented in Python 3 using PyCr
 ## Project Structure (short)
 
 ```
-crypto_engine/
-  └─ hybrid_crypto.py          # Core cryptographic engine
-examples/
-  └─ demo.py                    # Working demonstration
-  └─ run_full_protocol_demo.py  # Alternative demo runner
-keys/
-  └─ (generated keys at runtime)
-scripts/
-  └─ cleanup_docs_and_keys.ps1  # Repository cleanup utility
-app.py                            # CLI wrapper (Click framework)
-README.md
-TECHNICAL_OVERVIEW.md
-QUICKSTART.md
-DELIVERABLES.md
+Hybrid-Cryptography-System/
+├── crypto_engine/
+│   ├── __init__.py
+│   └── hybrid_crypto.py              # Core engine (Base64 encoding)
+├── examples/
+│   ├── demo.py                       # Main demonstration (production-ready)
+│   ├── sample_message.txt            # Generated test message
+│   ├── message_encrypted.json        # Generated encrypted package
+│   └── message_decrypted.txt         # Generated decrypted output
+├── keys/                             # Generated at runtime
+│   ├── sender/
+│   │   ├── private_key_encrypted.json
+│   │   └── public_key.pem
+│   └── receiver/
+│       ├── private_key_encrypted.json
+│       └── public_key.pem
+├── scripts/
+│   └── cleanup_docs_and_keys.ps1     # Repository cleanup utility
+├── app.py                            # CLI wrapper (Click framework)
+├── requirements.txt                  # Dependencies
+├── README.md                         # This file
+├── TECHNICAL_OVERVIEW.md             # Cryptographic specifications
+├── QUICKSTART.md                     # Getting started guide
+├── DELIVERABLES.md                   # Requirements checklist
+├── LICENSE                           # MIT License
+└── .gitignore                        # Git configuration
 ```
 
 ## Installation
