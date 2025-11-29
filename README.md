@@ -5,7 +5,7 @@
 ║                                                                           ║
 ║          🔐 HYBRID CRYPTOGRAPHY SYSTEM - SUCCESSFULLY DEPLOYED 🔐        ║
 ║                                                                           ║
-║                      AES-256-GCM • RSA-4096-PSS-OAEP • PBKDF2-SHA256     ║
+║               AES-256-GCM • RSA-4096-PSS-OAEP • PBKDF2-SHA256             ║
 ║                                                                           ║
 ╚═══════════════════════════════════════════════════════════════════════════╝
 ```
