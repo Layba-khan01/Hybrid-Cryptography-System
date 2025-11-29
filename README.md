@@ -218,6 +218,36 @@ Decrypts a file with full verification.
 
 **Returns:** Decrypted plaintext (bytes)
 
+#### Encrypted Package Structure
+
+The `encrypt_file()` function returns a dictionary with the following structure (all binary data is Base64-encoded for JSON serialization):
+
+```json
+{
+  "ciphertext": "Base64-encoded AES-256-GCM ciphertext",
+  "iv": "Base64-encoded initialization vector (16 bytes)",
+  "auth_tag": "Base64-encoded GCM authentication tag (16 bytes)",
+  "encrypted_session_key": "Base64-encoded RSA-4096-OAEP encrypted AES key",
+  "signature": "Base64-encoded RSA-4096-PSS signature of ciphertext",
+  "algorithm": {
+    "encryption": "AES-256-GCM",
+    "key_exchange": "RSA-4096-OAEP",
+    "signature": "RSA-4096-PSS"
+  },
+  "metadata": {
+    "original_filename": "source_file.txt",
+    "original_size": 1024,
+    "hash_algorithm": "SHA256"
+  }
+}
+```
+
+**Base64 Encoding Benefits:**
+- ✅ JSON-compatible: Safe for transmission via APIs
+- ✅ Human-readable: Easy to inspect and debug
+- ✅ No encoding issues: Works seamlessly in databases and REST APIs
+- ✅ Standard format: Compatible with any JSON-based system
+
 #### `load_private_key(private_key_file, passphrase)`
 Loads and decrypts a private key from an encrypted file.
 

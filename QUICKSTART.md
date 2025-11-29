@@ -139,7 +139,38 @@ Encrypt AES key with RSA-4096-OAEP (Bob's public key)
 Sign ciphertext with RSA-4096-PSS (Alice's private key)
    ↓
 Package: {ciphertext, iv, auth_tag, encrypted_key, signature}
+   ↓
+Encode all binary data to Base64 for JSON serialization
+   ↓
+JSON Encrypted Package (API-ready)
 ```
+
+### Encrypted Package Format (JSON)
+
+All binary fields are Base64-encoded for safe JSON transmission:
+
+```json
+{
+  "ciphertext": "4szzax0l/BuWafP+1WW4Cn4EpcvLjP2jR6nnUu/EAEk...",
+  "iv": "RImoT328Kobw53sRtuGPKA==",
+  "auth_tag": "s7UAv6g671KP+XPWgJrdXw==",
+  "encrypted_session_key": "yzD9qlk3M4II26v2DBVyYF6Hk0ej...",
+  "signature": "OTvD84PuADKfWakYib7N9OlnW9xp...",
+  "algorithm": {
+    "encryption": "AES-256-GCM",
+    "key_exchange": "RSA-4096-OAEP",
+    "signature": "RSA-4096-PSS"
+  },
+  "metadata": {
+    "original_filename": "document.txt",
+    "original_size": 1024,
+    "hash_algorithm": "SHA256"
+  }
+}
+```
+
+**Why Base64?** Binary data needs encoding for JSON serialization. Base64 is URL-safe, portable, and compatible with all APIs and databases.
+
 
 ### Decryption Process
 ```

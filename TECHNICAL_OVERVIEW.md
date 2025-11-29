@@ -342,8 +342,46 @@ This section consolidates concrete implementation notes, function signatures and
 
 ### File Formats
 
-- Encrypted private key JSON: `{ "iv": ..., "ciphertext": ..., "auth_tag": ..., "salt": ..., "algorithm": "AES-256-GCM" }`
-- Encrypted package: fields described in `encrypt_file()` above; binary blobs are hex-encoded for JSON portability.
+#### Encrypted Private Key JSON
+Stores RSA private key encrypted with AES-256-GCM and PBKDF2-derived passphrase:
+```json
+{
+  "iv": "Base64-encoded IV (16 bytes)",
+  "ciphertext": "Base64-encoded encrypted private key",
+  "auth_tag": "Base64-encoded GCM auth tag (16 bytes)",
+  "salt": "Base64-encoded PBKDF2 salt (16 bytes)",
+  "algorithm": "AES-256-GCM",
+  "kdf": "PBKDF2-SHA256"
+}
+```
+
+#### Encrypted Package (File Encryption Output)
+All binary data is **Base64-encoded** for JSON and API compatibility:
+```json
+{
+  "ciphertext": "Base64-encoded AES-256-GCM ciphertext",
+  "iv": "Base64-encoded initialization vector (16 bytes)",
+  "auth_tag": "Base64-encoded GCM authentication tag (16 bytes)",
+  "encrypted_session_key": "Base64-encoded RSA-4096-OAEP encrypted AES key",
+  "signature": "Base64-encoded RSA-4096-PSS signature of ciphertext",
+  "algorithm": {
+    "encryption": "AES-256-GCM",
+    "key_exchange": "RSA-4096-OAEP",
+    "signature": "RSA-4096-PSS"
+  },
+  "metadata": {
+    "original_filename": "source.txt",
+    "original_size": 1024,
+    "hash_algorithm": "SHA256"
+  }
+}
+```
+
+**Base64 Encoding Rationale:**
+- ✅ JSON-safe: All byte strings encoded without escape sequences
+- ✅ API-ready: Compatible with REST APIs, webhooks, databases
+- ✅ Human-readable: Easy inspection and debugging
+- ✅ Standard: Industry-standard encoding (RFC 4648)
 
 ### Testing and Demonstration
 
@@ -359,7 +397,7 @@ This section consolidates concrete implementation notes, function signatures and
 
 - Clear separation of responsibilities (KDF, key storage, encryption, verification).
 - Defensive programming: all verification steps raise descriptive exceptions; plaintext never returned if any verification fails.
-- Use of hex-encoding for JSON portability; binary-safe storage recommended for production (e.g., base64 or binary blobs in a secure store).
+- **Base64 encoding**: All binary data (ciphertext, keys, signatures) is Base64-encoded for JSON serialization, ensuring safe transmission via APIs and databases without encoding issues.
 
 ---
 

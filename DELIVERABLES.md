@@ -22,6 +22,7 @@
 - Comprehensive error handling
 - Security-critical operations clearly marked
 - Follows PEP 8 style guidelines
+- **Base64 Encoding**: All binary data (ciphertext, IV, keys, signatures) is Base64-encoded for JSON serialization and API safety
 
 ---
 
@@ -216,28 +217,62 @@ Hybrid-Cryptography-System/
 
 ---
 
+## Recent Refactoring: Base64 Encoding for JSON Serialization
+
+**Status**: ✅ COMPLETE
+
+**Objective**: Ensure all binary data (ciphertext, IV, keys, signatures) is Base64-encoded for safe JSON transmission and API compatibility.
+
+**Implementation**:
+- ✅ Added `import base64` to `crypto_engine/hybrid_crypto.py`
+- ✅ Updated `encrypt_file()` to encode all binary fields: `base64.b64encode(bytes).decode('utf-8')`
+- ✅ Updated `decrypt_file()` to decode all Base64 fields: `base64.b64decode(b64_string)`
+- ✅ `save_encrypted_file()` and `load_encrypted_file()` transparently handle Base64 during JSON I/O
+- ✅ Verified with `examples/demo.py` — full encryption/decryption flow successful
+
+**Encrypted Package Structure** (with Base64 encoding):
+```json
+{
+  "ciphertext": "Base64-encoded",
+  "iv": "Base64-encoded",
+  "auth_tag": "Base64-encoded",
+  "encrypted_session_key": "Base64-encoded",
+  "signature": "Base64-encoded",
+  "algorithm": { ... },
+  "metadata": { ... }
+}
+```
+
+**Benefits**:
+- ✅ JSON-safe: No binary escape issues
+- ✅ API-ready: Compatible with REST, webhooks, databases
+- ✅ Human-readable: Easy to inspect and debug
+- ✅ Standard format: RFC 4648 compliant
+
+---
+
 ## Critical Requirements - Verification
 
 ### ✅ Requirement 1: AES-256-GCM Authentication & Confidentiality
 - Algorithm: AES-256 in GCM mode ✓
 - Implementation: `encrypt_file()` & `decrypt_file()` ✓
 - Output Components:
-  - Ciphertext (C) ✓
-  - Initialization Vector (IV) ✓
-  - Authentication Tag (T) ✓
+  - Ciphertext (C) ✓ — Base64-encoded
+  - Initialization Vector (IV) ✓ — Base64-encoded
+  - Authentication Tag (T) ✓ — Base64-encoded
 - Verification: Strict tag verification before plaintext release ✓
 
 ### ✅ Requirement 2: RSA-4096-OAEP Key Exchange
 - Algorithm: RSA-4096 with OAEP padding ✓
 - Implementation: `encrypt_file()` session key encryption ✓
 - Hash Algorithm: SHA-256 ✓
-- Output: Encrypted session key in package ✓
+- Output: Encrypted session key in package ✓ — Base64-encoded
 
 ### ✅ Requirement 3: RSA-4096-PSS Digital Signatures
 - Algorithm: RSA-4096 with PSS padding ✓
 - Implementation: `encrypt_file()` signature generation ✓
 - Hash: SHA-256 digest of ciphertext ✓
-- Output: Digital signature (Sig) in package ✓
+- Output: Digital signature (Sig) in package ✓ — Base64-encoded
 - Verification: Strict signature check before decryption ✓
 
 ### ✅ Requirement 4: PBKDF2 Key Derivation

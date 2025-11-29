@@ -5,6 +5,7 @@ Implements AES-256-GCM, RSA-4096-OAEP, RSA-4096-PSS, and PBKDF2
 
 import os
 import json
+import base64
 from typing import Tuple, Dict, Any, Optional
 from Cryptodome.Protocol.KDF import PBKDF2
 from Cryptodome.Hash import SHA256
@@ -204,11 +205,11 @@ def encrypt_file(
     
     Returns:
         Dict[str, Any]: Encrypted package containing:
-            - 'ciphertext': Encrypted data (hex-encoded)
-            - 'iv': Initialization vector for AES-GCM (hex-encoded)
-            - 'auth_tag': GCM authentication tag (hex-encoded)
-            - 'encrypted_session_key': RSA-OAEP encrypted session key (hex-encoded)
-            - 'signature': RSA-PSS signature of ciphertext (hex-encoded)
+            - 'ciphertext': Encrypted data (Base64-encoded)
+            - 'iv': Initialization vector for AES-GCM (Base64-encoded)
+            - 'auth_tag': GCM authentication tag (Base64-encoded)
+            - 'encrypted_session_key': RSA-OAEP encrypted session key (Base64-encoded)
+            - 'signature': RSA-PSS signature of ciphertext (Base64-encoded)
             - 'algorithm': Algorithm identifiers
             - 'metadata': File metadata
     
@@ -244,13 +245,13 @@ def encrypt_file(
     hash_obj = SHA256.new(ciphertext)
     signature = pss.new(sender_private_key).sign(hash_obj)
     
-    # Package the encrypted data
+    # Package the encrypted data (all binary data as Base64)
     encrypted_package = {
-        'ciphertext': ciphertext.hex(),
-        'iv': iv.hex(),
-        'auth_tag': auth_tag.hex(),
-        'encrypted_session_key': encrypted_session_key.hex(),
-        'signature': signature.hex(),
+        'ciphertext': base64.b64encode(ciphertext).decode('utf-8'),
+        'iv': base64.b64encode(iv).decode('utf-8'),
+        'auth_tag': base64.b64encode(auth_tag).decode('utf-8'),
+        'encrypted_session_key': base64.b64encode(encrypted_session_key).decode('utf-8'),
+        'signature': base64.b64encode(signature).decode('utf-8'),
         'algorithm': {
             'encryption': 'AES-256-GCM',
             'key_exchange': 'RSA-4096-OAEP',
@@ -316,12 +317,12 @@ def decrypt_file(
     Raises:
         ValueError: If signature verification fails, tag verification fails, or decryption fails
     """
-    # Extract components from encrypted package
-    ciphertext = bytes.fromhex(encrypted_package['ciphertext'])
-    iv = bytes.fromhex(encrypted_package['iv'])
-    auth_tag = bytes.fromhex(encrypted_package['auth_tag'])
-    encrypted_session_key = bytes.fromhex(encrypted_package['encrypted_session_key'])
-    signature = bytes.fromhex(encrypted_package['signature'])
+    # Extract components from encrypted package and decode from Base64
+    ciphertext = base64.b64decode(encrypted_package['ciphertext'])
+    iv = base64.b64decode(encrypted_package['iv'])
+    auth_tag = base64.b64decode(encrypted_package['auth_tag'])
+    encrypted_session_key = base64.b64decode(encrypted_package['encrypted_session_key'])
+    signature = base64.b64decode(encrypted_package['signature'])
     
     # STEP 1: Verify RSA-PSS signature on ciphertext
     sender_public_key = RSA.import_key(sender_public_key_pem)
