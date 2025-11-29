@@ -303,3 +303,64 @@ plaintext = decrypt_file(
 ---
 
 **Built with PyCryptodome** - A self-contained pure-Python implementation of cryptographic algorithms.
+## Implementation Details and Function Reference
+
+This section consolidates concrete implementation notes, function signatures and outputs to make `TECHNICAL_OVERVIEW.md` the single deep-dive reference for developers.
+
+### Core Functions (signatures and behavior)
+
+1. `derive_key_from_passphrase(passphrase: str, salt: Optional[bytes]=None, key_length: int=32, iterations: int=100000) -> Tuple[bytes, bytes]`
+    - Derives a 32-byte key (default) using PBKDF2-HMAC-SHA256.
+    - If `salt` is None a 16-byte random salt is generated.
+    - Returns `(derived_key, salt)` where `derived_key` is bytes suitable for AES-256.
+
+2. `generate_rsa_keypair(passphrase: str, key_size: int=4096, output_dir: str='./keys') -> Dict[str, str]`
+    - Generates a 4096-bit RSA keypair.
+    - Private key is encrypted with AES-256-GCM using a PBKDF2-derived key from the provided `passphrase`.
+    - Stored output includes encrypted private key JSON and public key PEM file.
+    - Returns dictionary with keys: `private_key_file`, `public_key_file`, `private_key_pem`, `public_key_pem`, `salt`.
+
+3. `load_private_key(private_key_file: str, passphrase: str) -> bytes`
+    - Loads the encrypted private key JSON, derives the AES key via PBKDF2, decrypts the private key with AES-256-GCM and returns the private key bytes (PEM).
+
+4. `encrypt_file(plaintext_path: str, receiver_public_key_pem: bytes, sender_private_key_pem: bytes) -> Dict[str, Any]`
+    - Implements the hybrid protocol:
+      - Generate random 32-byte session key Ks
+      - AES-256-GCM encrypt plaintext → ciphertext (hex), iv (hex), auth_tag (hex)
+      - RSA-4096-OAEP encrypt session key → encrypted_session_key (hex)
+      - RSA-4096-PSS sign ciphertext → signature (hex)
+    - Returns JSON-serializable dictionary with fields: `ciphertext`, `iv`, `auth_tag`, `encrypted_session_key`, `signature`, `algorithm`, `metadata`.
+
+5. `decrypt_file(encrypted_package: Dict[str, Any], receiver_private_key_pem: bytes, sender_public_key_pem: bytes) -> bytes`
+    - Verification-first decryption flow:
+      - Verify RSA-PSS signature against ciphertext using `sender_public_key_pem`. If verification fails, raise `ValueError("Signature verification failed")`.
+      - Decrypt encrypted session key using RSA-OAEP with `receiver_private_key_pem`.
+      - Decrypt ciphertext with AES-256-GCM using the session key, iv and auth_tag. If tag verification fails raise `ValueError("Authentication tag verification failed")`.
+      - Return plaintext bytes on success.
+
+6. Utility functions: `save_encrypted_file()`, `load_encrypted_file()`, `get_file_metadata()`, `verify_package_integrity()`
+
+### File Formats
+
+- Encrypted private key JSON: `{ "iv": ..., "ciphertext": ..., "auth_tag": ..., "salt": ..., "algorithm": "AES-256-GCM" }`
+- Encrypted package: fields described in `encrypt_file()` above; binary blobs are hex-encoded for JSON portability.
+
+### Testing and Demonstration
+
+- The `examples/demo.py` (or `examples/run_full_protocol_demo.py` for an alternate runner) scripts exercise the full flow: key generation, sample plaintext creation, encryption, decryption, tamper test, and verification outputs.
+- The demo asserts plaintext equality after decrypting and demonstrates explicit handling of signature failures and GCM tag failures.
+
+### Performance Notes
+
+- RSA-4096 key generation dominates runtime for one-time setup (5–15s typical). Consider generating keys offline.
+- PBKDF2 with 100k iterations is intentionally slowed to resist brute-force; tune only with awareness of security trade-offs.
+
+### Code Quality and Security Practices (summary)
+
+- Clear separation of responsibilities (KDF, key storage, encryption, verification).
+- Defensive programming: all verification steps raise descriptive exceptions; plaintext never returned if any verification fails.
+- Use of hex-encoding for JSON portability; binary-safe storage recommended for production (e.g., base64 or binary blobs in a secure store).
+
+---
+
+For more concrete examples and usage patterns, consult `examples/demo.py` and the `crypto_engine/hybrid_crypto.py` docstrings.
