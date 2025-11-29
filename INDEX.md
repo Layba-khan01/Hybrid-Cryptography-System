@@ -1,32 +1,8 @@
-# Hybrid Cryptography System - Complete Index
+This file was consolidated into `README.md` during the documentation cleanup.
 
-## 📋 Quick Navigation
+Refer to `README.md` for navigation and `TECHNICAL_OVERVIEW.md` for the implementation deep-dive.
 
-### Start Here
-1. **[QUICKSTART.md](QUICKSTART.md)** - Get up and running in 5 minutes
-2. **[README.md](README.md)** - Complete project overview and API reference
-3. **[TECHNICAL_OVERVIEW.md](TECHNICAL_OVERVIEW.md)** - Deep dive into cryptography
-
-### Reference Documentation
-- **[IMPLEMENTATION_SUMMARY.md](IMPLEMENTATION_SUMMARY.md)** - What was built and why
-- **[DELIVERABLES.md](DELIVERABLES.md)** - Complete checklist of deliverables
-- **[This File](INDEX.md)** - Navigation guide
-
-### Code
-- **[crypto_engine/hybrid_crypto.py](crypto_engine/hybrid_crypto.py)** - Core engine (800+ lines)
-- **[examples/demo.py](examples/demo.py)** - Working demonstration
-
----
-
-## 🎯 Project Overview
-
-**Hybrid Cryptography System** is a production-grade Python implementation combining:
-
-- **AES-256-GCM** for authenticated encryption
-- **RSA-4096-OAEP** for key exchange
-- **RSA-4096-PSS** for digital signatures
-- **PBKDF2-SHA256** for key derivation
-
+Deprecated: content moved during repository documentation consolidation.
 ## 🔐 What It Does
 
 ### Encrypts Files Securely

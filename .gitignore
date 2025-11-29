@@ -1,5 +1,6 @@
 # 🔑 CUSTOM SECURITY EXCLUSIONS FOR HYBRID CRYPTO PROJECT 🔑
 # These MUST NOT be committed as they may contain keys or test data.
+keys/
 **/*.key**
 **/*.pem**
 **/*.priv**

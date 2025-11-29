@@ -65,28 +65,10 @@ python examples/demo.py
 ```
 
 **3. Use in your code:**
-```python
-from crypto_engine import (
-    generate_rsa_keypair,
-    encrypt_file,
-    decrypt_file,
-    load_private_key
-)
+This file was consolidated into `README.md` and `TECHNICAL_OVERVIEW.md`.
+Please refer to `README.md` for the project landing page and `TECHNICAL_OVERVIEW.md` for the implementation deep-dive.
 
-# Generate keys
-sender = generate_rsa_keypair("passphrase")
-receiver = generate_rsa_keypair("passphrase")
-
-# Encrypt file
-encrypted = encrypt_file(
-    "secret.txt",
-    receiver['public_key_pem'].encode(),
-    sender['private_key_pem'].encode()
-)
-
-# Decrypt file
-receiver_key = load_private_key(receiver['private_key_file'], "passphrase")
-plaintext = decrypt_file(encrypted, receiver_key, sender['public_key_pem'].encode())
+Deprecated: content moved during repository documentation consolidation.
 ```
 
 ### 📖 Documentation Map
