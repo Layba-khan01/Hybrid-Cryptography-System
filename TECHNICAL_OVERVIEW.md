@@ -215,6 +215,7 @@ Comprehensive demonstration script showing:
   "auth_tag": "cafebabe...",
   "encrypted_session_key": "f00dba11...",
   "signature": "baadf00d...",
+  "public_key_pem": "LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0KTUlJQkl...",
   "algorithm": {
     "encryption": "AES-256-GCM",
     "key_exchange": "RSA-4096-OAEP",
@@ -223,10 +224,18 @@ Comprehensive demonstration script showing:
   "metadata": {
     "original_filename": "document.pdf",
     "original_size": 102400,
+    "file_type": "documents",
+    "extension": ".pdf",
+    "mime_type": "application/pdf",
     "hash_algorithm": "SHA256"
   }
 }
 ```
+
+**Key Features:**
+- **`public_key_pem` (Base64):** Sender's public key embedded for seamless verification
+- **File Type Detection:** Metadata includes file category, extension, and MIME type
+- **All Binary Fields Base64-Encoded:** Safe for JSON transmission via APIs and databases
 
 ## Error Handling
 
@@ -288,16 +297,30 @@ plaintext = decrypt_file(
 ## Limitations & Future Enhancements
 
 ### Current Limitations
-1. Entire file loaded into memory
-2. No streaming encryption for large files
-3. Passphrase recovery not implemented
-4. No key revocation system
+1. Entire file loaded into memory (not streaming)
+2. Passphrase recovery not implemented
+3. No key revocation system
+4. Single-user key management (no key server)
+
+### Supported File Types
+The system treats all files as opaque binary data, supporting:
+- **Text**: `.txt`, `.md`, `.csv`, `.json`, `.xml`, `.log`, `.yml`, `.yaml`, `.ini`, `.cfg`
+- **Images**: `.jpg`, `.jpeg`, `.png`, `.gif`, `.bmp`, `.tiff`, `.tif`, `.webp`, `.ico`
+- **Documents**: `.pdf`, `.docx`, `.xlsx`, `.pptx`, `.doc`, `.xls`, `.ppt`, `.odt`, `.rtf`
+- **Videos**: `.mp4`, `.avi`, `.mov`, `.mkv`, `.flv`, `.wmv`, `.webm`, `.m4v`, `.3gp`
+- **Audio**: `.mp3`, `.wav`, `.flac`, `.aac`, `.ogg`, `.wma`, `.alac`, `.opus`, `.m4a`
+- **Archives**: `.zip`, `.rar`, `.7z`, `.tar`, `.gz`, `.bz2`, `.xz`, `.iso`
+- **Executables**: `.exe`, `.dll`, `.so`, `.dylib`, `.app`, `.bin`
+- **Code**: `.py`, `.js`, `.java`, `.cpp`, `.c`, `.go`, `.rs`, `.php`, `.rb`
+- **Any other binary file type**
 
 ### Potential Enhancements
-1. Streaming cipher mode for large files
+1. Streaming encryption/decryption for large files
 2. Certificate-based key distribution (X.509)
-3. Key server integration
+3. Key server/directory integration
 4. Hardware security module (HSM) support
+5. Multi-recipient encryption
+6. Key expiration and revocation
 5. Multi-recipient encryption
 
 ---

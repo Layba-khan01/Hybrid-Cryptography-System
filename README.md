@@ -85,11 +85,28 @@ pip install click
 
 ## Usage
 
-### Option 1: CLI (Recommended for Most Users)
+### Option 1: GUI (Easiest for Most Users)
+
+Launch the interactive Tkinter GUI application:
+
+```bash
+python -m crypto_engine.gui_app
+```
+
+**Features:**
+- Tabbed interface: **Key Management**, **Encrypt & Share**, **Receive & Decrypt**
+- Role-based keypair generation (sender/receiver)
+- Secure passphrase prompts with masking
+- File browser for easy file selection
+- In-memory key loading for smooth workflows
+- Real-time validation and security alerts
+- "TAMPERING DETECTED" warnings on decryption failure
+
+### Option 2: CLI (Command Line Interface)
 
 The `app.py` CLI wrapper provides three simple commands: `generate-keys`, `encrypt`, and `decrypt`.
 
-#### Generate Keys
+#### Generate Keys (with Role)
 ```powershell
 # Generate keys for sender (prompts for passphrase)
 python app.py generate-keys --output ./keys --role sender
@@ -97,6 +114,8 @@ python app.py generate-keys --output ./keys --role sender
 # Generate keys for receiver
 python app.py generate-keys --output ./keys --role receiver
 ```
+
+Keys are automatically organized under `./keys/<role>/` for clean organization.
 
 #### Encrypt a File
 ```powershell
@@ -199,23 +218,28 @@ Generates and securely stores an RSA key pair.
 
 **Returns:** Dictionary with key paths and PEM formats
 
-#### `encrypt_file(plaintext_path, receiver_public_key_pem, sender_private_key_pem)`
-Encrypts a file using the hybrid protocol.
+#### `encrypt_file(plaintext, receiver_public_key_pem, sender_private_key_pem, original_filename=None)`
+Encrypts data (file path or raw bytes) using the hybrid protocol.
 
 **Process:**
-1. Generate random AES-256 session key (Ks)
-2. Encrypt plaintext with AES-256-GCM → (C, IV, T)
-3. Encrypt session key with RSA-4096-OAEP → (Ks_enc)
-4. Sign ciphertext with RSA-4096-PSS → (Sig)
+1. Load plaintext bytes (file or raw bytes) and detect file metadata
+2. Generate random AES-256 session key (Ks)
+3. Encrypt plaintext with AES-256-GCM → (C, IV, T)
+4. Encrypt session key with RSA-4096-OAEP → (Ks_enc)
+5. Sign ciphertext with RSA-4096-PSS → (Sig)
+6. Include sender's public key (Base64) in package for seamless verification
 
 **Parameters:**
-- `plaintext_path` (str): Path to file to encrypt
+- `plaintext` (str|bytes): File path or raw bytes to encrypt
 - `receiver_public_key_pem` (bytes): Receiver's public key
 - `sender_private_key_pem` (bytes): Sender's private key
+- `original_filename` (str, optional): Override metadata filename
 
-**Returns:** Dictionary containing encrypted package
+**Returns:** Dictionary containing encrypted package with all binary fields Base64-encoded
 
-#### `decrypt_file(encrypted_package, receiver_private_key_pem, sender_public_key_pem)`
+**Supported File Types:** Text (.txt, .md, .json, .xml, .csv), images (.jpg, .png, .gif, .tiff, .webp), PDFs (.pdf), videos (.mp4, .avi, .mov, .mkv), audio (.mp3, .wav, .flac), archives (.zip, .rar, .7z), documents (.docx, .xlsx, .pptx), and any other binary file type.
+
+#### `decrypt_file(encrypted_package, receiver_private_key_pem, sender_public_key_pem=None)`
 Decrypts a file with full verification.
 
 **Verification Process:**
@@ -224,11 +248,13 @@ Decrypts a file with full verification.
 3. Decrypt ciphertext with AES-256-GCM and verify authentication tag
 
 **Parameters:**
-- `encrypted_package` (dict): Encrypted data package
+- `encrypted_package` (dict): Encrypted data package (all binary fields Base64-encoded)
 - `receiver_private_key_pem` (bytes): Receiver's private key
-- `sender_public_key_pem` (bytes): Sender's public key
+- `sender_public_key_pem` (bytes, optional): Sender's public key (auto-extracted from package if not provided)
 
 **Returns:** Decrypted plaintext (bytes)
+
+**Smart Key Extraction:** If `sender_public_key_pem` is not provided, the function automatically attempts to use the embedded `public_key_pem` field from the encrypted package (stored as Base64). This enables seamless verification workflows without requiring the sender's public key separately.
 
 #### Encrypted Package Structure
 
@@ -241,6 +267,7 @@ The `encrypt_file()` function returns a dictionary with the following structure 
   "auth_tag": "Base64-encoded GCM authentication tag (16 bytes)",
   "encrypted_session_key": "Base64-encoded RSA-4096-OAEP encrypted AES key",
   "signature": "Base64-encoded RSA-4096-PSS signature of ciphertext",
+  "public_key_pem": "Base64-encoded sender public key (PEM format)",
   "algorithm": {
     "encryption": "AES-256-GCM",
     "key_exchange": "RSA-4096-OAEP",
@@ -249,6 +276,9 @@ The `encrypt_file()` function returns a dictionary with the following structure 
   "metadata": {
     "original_filename": "source_file.txt",
     "original_size": 1024,
+    "file_type": "text",
+    "extension": ".txt",
+    "mime_type": "text/plain",
     "hash_algorithm": "SHA256"
   }
 }

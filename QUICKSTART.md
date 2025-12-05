@@ -24,6 +24,21 @@
    pip install click
    ```
 
+## GUI Quick Start (Easiest)
+
+Launch the interactive Tkinter GUI:
+
+```bash
+python -m crypto_engine.gui_app
+```
+
+The GUI provides an intuitive tabbed interface:
+- **Key Management**: Generate role-based key pairs (sender/receiver) and load existing keys
+- **Encrypt & Share**: Select a file, receiver's public key, sender's private key, and encrypt
+- **Receive & Decrypt**: Load encrypted package, provide receiver's private key, and decrypt
+
+All passphrases are securely prompted and masked from display.
+
 ## CLI Quick Start
 
 The fastest way to get started is using the `app.py` CLI wrapper.
@@ -156,6 +171,7 @@ All binary fields are Base64-encoded for safe JSON transmission:
   "auth_tag": "s7UAv6g671KP+XPWgJrdXw==",
   "encrypted_session_key": "yzD9qlk3M4II26v2DBVyYF6Hk0ej...",
   "signature": "OTvD84PuADKfWakYib7N9OlnW9xp...",
+  "public_key_pem": "LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0K...",
   "algorithm": {
     "encryption": "AES-256-GCM",
     "key_exchange": "RSA-4096-OAEP",
@@ -164,12 +180,17 @@ All binary fields are Base64-encoded for safe JSON transmission:
   "metadata": {
     "original_filename": "document.txt",
     "original_size": 1024,
+    "file_type": "text",
+    "extension": ".txt",
+    "mime_type": "text/plain",
     "hash_algorithm": "SHA256"
   }
 }
 ```
 
 **Why Base64?** Binary data needs encoding for JSON serialization. Base64 is URL-safe, portable, and compatible with all APIs and databases.
+
+**Embedded Sender Key:** The `public_key_pem` is included in the package (Base64-encoded), allowing automatic signature verification without requiring the sender's public key separately.
 
 
 ### Decryption Process
@@ -268,13 +289,14 @@ pip install -r requirements.txt
 Hybrid-Cryptography-System/
 ├── crypto_engine/
 │   ├── __init__.py
-│   └── hybrid_crypto.py              # Core engine (Base64 encoding)
+│   ├── gui_app.py                       # Tkinter GUI application
+│   └── hybrid_crypto.py                 # Core engine (Base64 encoding)
 ├── examples/
-│   ├── demo.py                       # Main demonstration
-│   ├── sample_message.txt            # Generated test message
-│   ├── message_encrypted.json        # Generated encrypted package (Base64)
-│   └── message_decrypted.txt         # Generated decrypted output
-├── keys/                             # Generated at runtime
+│   ├── demo.py                          # Main demonstration
+│   ├── sample_message.txt               # Generated test message
+│   ├── message_encrypted.json           # Generated encrypted package (Base64)
+│   └── message_decrypted.txt            # Generated decrypted output
+├── keys/                                # Generated at runtime
 │   ├── sender/
 │   │   ├── private_key_encrypted.json
 │   │   └── public_key.pem
@@ -282,14 +304,13 @@ Hybrid-Cryptography-System/
 │       ├── private_key_encrypted.json
 │       └── public_key.pem
 ├── scripts/
-│   └── cleanup_docs_and_keys.ps1     # Repository cleanup utility
-├── app.py                            # CLI wrapper (Click framework)
-├── requirements.txt                  # Dependencies (pycryptodomex, click)
-├── README.md                         # Complete API documentation
-├── TECHNICAL_OVERVIEW.md             # Cryptographic deep dive
-├── QUICKSTART.md                     # This file
-├── DELIVERABLES.md                   # Requirements checklist
-└── LICENSE                           # MIT License
+│   └── cleanup_docs_and_keys.ps1        # Repository cleanup utility
+├── requirements.txt                     # Dependencies (pycryptodomex, click)
+├── README.md                            # Complete API documentation
+├── TECHNICAL_OVERVIEW.md                # Cryptographic deep dive
+├── QUICKSTART.md                        # This file
+├── DELIVERABLES.md                      # Requirements checklist
+└── LICENSE                              # MIT License
 ```
 
 **Note:** All binary data in encrypted packages is **Base64-encoded** for JSON serialization and API safety.
