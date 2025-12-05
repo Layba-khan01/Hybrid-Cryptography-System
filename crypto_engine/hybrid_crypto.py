@@ -1,6 +1,17 @@
 """
 Hybrid Cryptography System - Core Engine
 Implements AES-256-GCM, RSA-4096-OAEP, RSA-4096-PSS, and PBKDF2
+
+Supports encryption/decryption of ALL file types:
+- Text files (.txt, .md, .csv, .json, .xml, etc.)
+- Images (.jpg, .png, .gif, .bmp, .tiff, .webp, etc.)
+- PDFs (.pdf)
+- Videos (.mp4, .avi, .mov, .mkv, .flv, etc.)
+- Audio (.mp3, .wav, .flac, .aac, .ogg, etc.)
+- Archives (.zip, .rar, .7z, .tar, .gz, etc.)
+- Documents (.docx, .xlsx, .pptx, .doc, .xls, etc.)
+- Binary files (.exe, .dll, .so, .dylib, etc.)
+- Any other file type
 """
 
 import os
