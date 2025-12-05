@@ -2,7 +2,7 @@
 
 ## Table of Contents
 - [Installation](#installation)
-- [CLI Quick Start](#cli-quick-start)
+- [GUI Quick Start](#gui-quick-start)
 - [Python API Quick Start](#python-api-quick-start)
 - [Running the Demo](#running-the-demo)
 - [Troubleshooting](#troubleshooting)
@@ -19,11 +19,6 @@
    pip install -r requirements.txt
    ```
 
-3. **Install Click (for CLI)**
-   ```bash
-   pip install click
-   ```
-
 ## GUI Quick Start (Easiest)
 
 Launch the interactive Tkinter GUI:
@@ -38,46 +33,6 @@ The GUI provides an intuitive tabbed interface:
 - **Receive & Decrypt**: Load encrypted package, provide receiver's private key, and decrypt
 
 All passphrases are securely prompted and masked from display.
-
-## CLI Quick Start
-
-The fastest way to get started is using the `app.py` CLI wrapper.
-
-### Generate Keys
-
-```powershell
-# Generate sender keys (you'll be prompted for a passphrase)
-python app.py generate-keys --output ./keys --role sender
-
-# Generate receiver keys
-python app.py generate-keys --output ./keys --role receiver
-```
-
-### Encrypt a File
-
-```powershell
-python app.py encrypt `
-  --plaintext-file examples/sample_message.txt `
-  --receiver-public-key ./keys/receiver/public_key.pem `
-  --sender-private-key ./keys/sender/private_key_encrypted.json `
-  --output-file examples/message_encrypted.json
-```
-
-When prompted, enter the sender's passphrase.
-
-### Decrypt a File
-
-```powershell
-python app.py decrypt `
-  --ciphertext-file examples/message_encrypted.json `
-  --receiver-private-key ./keys/receiver/private_key_encrypted.json `
-  --sender-public-key ./keys/sender/public_key.pem `
-  --output-file examples/message_decrypted.txt
-```
-
-When prompted, enter the receiver's passphrase.
-
----
 
 ## Python API Quick Start
 

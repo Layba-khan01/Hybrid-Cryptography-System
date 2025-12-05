@@ -17,8 +17,6 @@ A production-grade hybrid cryptography system implemented in Python 3 using PyCr
 - Demo: `examples/demo.py`
 - Core engine: `crypto_engine/hybrid_crypto.py`
 - Deep dive: `TECHNICAL_OVERVIEW.md`
-- Quick start: `QUICKSTART.md`
-- Deliverables checklist: `DELIVERABLES.md`
 
 ## Table of Contents
 
@@ -35,7 +33,8 @@ A production-grade hybrid cryptography system implemented in Python 3 using PyCr
 Hybrid-Cryptography-System/
 ├── crypto_engine/
 │   ├── __init__.py
-│   └── hybrid_crypto.py              # Core engine (Base64 encoding)
+│   ├── hybrid_crypto.py              # Core engine (Base64 encoding)
+│   └── gui_app.py                    # Tkinter GUI application
 ├── examples/
 │   ├── demo.py                       # Main demonstration (production-ready)
 │   ├── sample_message.txt            # Generated test message
@@ -50,7 +49,7 @@ Hybrid-Cryptography-System/
 │       └── public_key.pem
 ├── scripts/
 │   └── cleanup_docs_and_keys.ps1     # Repository cleanup utility
-├── app.py                            # CLI wrapper (Click framework)
+├── app.py                            # (Removed - use GUI instead)
 ├── requirements.txt                  # Dependencies
 ├── README.md                         # This file
 ├── TECHNICAL_OVERVIEW.md             # Cryptographic specifications
@@ -73,19 +72,11 @@ Hybrid-Cryptography-System/
 cd Hybrid-Cryptography-System
 ```
 
-2. Install dependencies:
-```bash
-pip install -r requirements.txt
-```
-
-3. (Optional) Install Click for CLI wrapper:
-```bash
-pip install click
-```
+3. (Optional) Install Tkinter (usually included with Python)
 
 ## Usage
 
-### Option 1: GUI (Easiest for Most Users)
+### GUI (Graphical User Interface)
 
 Launch the interactive Tkinter GUI application:
 
@@ -145,7 +136,7 @@ python app.py encrypt --help
 python app.py decrypt --help
 ```
 
-### Option 2: Python API (Programmatic Access)
+### Python API (Programmatic Access)
 
 ```python
 from crypto_engine import (

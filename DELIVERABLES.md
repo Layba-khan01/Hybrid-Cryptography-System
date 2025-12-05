@@ -158,33 +158,6 @@
 
 ---
 
-### ✅ `app.py` (230+ lines)
-**Status**: COMPLETE
-
-**Purpose**: Click-based command-line interface wrapper for the cryptography system
-
-**Commands Implemented**:
-1. ✅ `generate-keys` - RSA-4096 keypair generation with secure passphrase prompting
-2. ✅ `encrypt` - Full hybrid encryption with sender authentication
-3. ✅ `decrypt` - Full hybrid decryption with tamper detection
-
-**Key Features**:
-- Interactive, secure passphrase input (hidden from terminal)
-- Confirmation prompting on key generation
-- Comprehensive file path validation using Click Path types
-- Clear error messages with appropriate exit codes (0=success, 1=error, 2=key import error, 3=tampering detected)
-- PowerShell-compatible command examples
-- Built with Click framework for professional CLI experience
-
-**Usage Examples**:
-```bash
-python app.py generate-keys --output ./keys --role sender
-python app.py encrypt --plaintext-file msg.txt --receiver-public-key bob_pub.pem --sender-private-key alice_priv.json --output-file out.json
-python app.py decrypt --ciphertext-file out.json --receiver-private-key bob_priv.json --sender-public-key alice_pub.pem --output-file msg_decrypted.txt
-```
-
----
-
 ### ✅ GUI Application Integration
 **Status**: COMPLETE
 
@@ -256,12 +229,11 @@ Hybrid-Cryptography-System/
 ├── scripts/                                # Utility scripts
 │   └── cleanup_docs_and_keys.ps1           # Repository cleanup utility
 │
-├── app.py                                  # CLI wrapper (Click framework, 280+ lines)
 ├── QUICKSTART.md                           # Getting started guide (360+ lines)
 ├── README.md                               # Complete documentation (380+ lines)
 ├── TECHNICAL_OVERVIEW.md                   # Deep dive documentation (550+ lines)
 ├── DELIVERABLES.md                         # Project requirements checklist (490+ lines)
-├── requirements.txt                        # Dependencies (pycryptodomex>=3.18.0, click>=7.0)
+├── requirements.txt                        # Dependencies (pycryptodomex>=3.18.0)
 ├── LICENSE                                 # MIT License
 └── .gitignore                              # Git ignore configuration
 ```
