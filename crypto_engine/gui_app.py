@@ -26,6 +26,7 @@ import os
 import json
 import tkinter as tk
 from tkinter import ttk, messagebox, filedialog, simpledialog
+import base64
 
 # Import hybrid_crypto functions. Try package-relative import first, then fallback.
 try:
@@ -122,11 +123,21 @@ class HybridCryptoGUI(tk.Tk):
         passphrase = simpledialog.askstring("Passphrase", "Enter passphrase to protect private key:", show='*', parent=self)
         if passphrase is None:
             return
+        # Ask role (sender/receiver) and validate
+        while True:
+            role = simpledialog.askstring("Role", "Enter role for the key pair ('sender' or 'receiver'):", parent=self)
+            if role is None:
+                return
+            role = role.strip().lower()
+            if role in ("sender", "receiver"):
+                break
+            messagebox.showerror("Invalid role", "Please enter either 'sender' or 'receiver'.")
 
-        # Destination directory
-        output_dir = filedialog.askdirectory(title='Select directory to save keys (will create files)')
-        if not output_dir:
+        # Destination directory (base); keys will be saved under <output_dir>/<role>/
+        base_output_dir = filedialog.askdirectory(title='Select directory to save keys (will create files)')
+        if not base_output_dir:
             return
+        output_dir = os.path.join(base_output_dir, role)
 
         try:
             result = generate_rsa_keypair(passphrase=passphrase, output_dir=output_dir)
@@ -134,13 +145,13 @@ class HybridCryptoGUI(tk.Tk):
             messagebox.showerror("Error", f"Failed to generate key pair:\n{e}")
             return
 
-        # result contains 'private_key_file' and 'public_key_file' (and 'public_key_pem' as Base64)
+        # result contains 'private_key_file' and 'public_key_file'
         priv = result.get('private_key_file')
         pub = result.get('public_key_file')
-        self.lbl_pub_path.config(text=f'Public key file: {pub or "-"}')
-        self.lbl_priv_path.config(text=f'Encrypted private key file: {priv or "-"}')
+        self.lbl_pub_path.config(text=f'Public key file ({role}): {pub or "-"}')
+        self.lbl_priv_path.config(text=f'Encrypted private key file ({role}): {priv or "-"}')
 
-        messagebox.showinfo("Success", f"Key pair generated and saved to:\n{output_dir}")
+        messagebox.showinfo("Success", f"Key pair for role '{role}' generated and saved to:\n{output_dir}")
 
     def _on_load_private_key(self):
         # Choose encrypted private key JSON file
@@ -354,8 +365,34 @@ class HybridCryptoGUI(tk.Tk):
                 return
 
         # Try to decrypt. On ValueError we must show TAMPERING DETECTED as required.
+        # Determine sender public key to use for verification
+        sender_pub_pem = None
+        if self.loaded_public_key_pem:
+            sender_pub_pem = self.loaded_public_key_pem
+        else:
+            # try to read from package if present (public_key_pem stored as Base64)
+            pkg_pub_b64 = encrypted_pkg.get('public_key_pem')
+            if pkg_pub_b64:
+                try:
+                    sender_pub_pem = base64.b64decode(pkg_pub_b64)
+                except Exception:
+                    sender_pub_pem = None
+
+        # If still missing, prompt user to select sender public key PEM file
+        if sender_pub_pem is None:
+            choose_path = filedialog.askopenfilename(title='Select sender public key PEM (or Cancel to abort)', filetypes=[('PEM','*.pem'), ('All','*.*')])
+            if not choose_path:
+                messagebox.showerror('Error', 'Sender public key required for signature verification. Aborting.')
+                return
+            try:
+                with open(choose_path, 'rb') as f:
+                    sender_pub_pem = f.read()
+            except Exception as e:
+                messagebox.showerror('Error', f'Failed to read sender public key:\n{e}')
+                return
+
         try:
-            plaintext_bytes = decrypt_file(encrypted_pkg, receiver_priv_pem)
+            plaintext_bytes = decrypt_file(encrypted_pkg, receiver_priv_pem, sender_pub_pem)
         except ValueError as e:
             # Signature or GCM tag verification failure or other value errors
             messagebox.showerror('TAMPERING DETECTED', 'TAMPERING DETECTED: Signature or authentication tag verification failed.')
