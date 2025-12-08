@@ -50,7 +50,6 @@ Hybrid-Cryptography-System/
 │       └── public_key.pem
 ├── scripts/
 │   └── cleanup_docs_and_keys.ps1     # Repository cleanup utility
-├── app.py                            # CLI wrapper (Click framework)
 ├── requirements.txt                  # Dependencies
 ├── README.md                         # This file
 ├── TECHNICAL_OVERVIEW.md             # Cryptographic specifications
