@@ -40,13 +40,10 @@ Hybrid-Cryptography-System/
 │   ├── sample_message.txt            # Generated test message
 │   ├── message_encrypted.json        # Generated encrypted package
 │   └── message_decrypted.txt         # Generated decrypted output
-├── keys/                             # Generated at runtime
-│   ├── sender/
+├── keys/                             # Generated at runtime (per-user directories)
+│   ├── <username>/
 │   │   ├── private_key_encrypted.json
-│   │   └── public_key.pem
-│   └── receiver/
-│       ├── private_key_encrypted.json
-│       └── public_key.pem
++│   │   └── public_key.pem
 ├── scripts/
 │   └── cleanup_docs_and_keys.ps1     # Repository cleanup utility
 ├── app.py                            # (Removed - use GUI instead)
@@ -84,8 +81,8 @@ Launch the interactive Tkinter GUI application:
 python -m crypto_engine.gui_app
 ```
 
-**Features:**
-- Tabbed interface: **Key Management**, **Encrypt & Share**, **Receive & Decrypt**
+- **Features:**
+- Tabbed interface: **Login / Register**, **Encrypt & Share**, **Receive & Decrypt**
 - Role-based keypair generation (sender/receiver)
 - Secure passphrase prompts with masking
 - File browser for easy file selection
@@ -93,48 +90,10 @@ python -m crypto_engine.gui_app
 - Real-time validation and security alerts
 - "TAMPERING DETECTED" warnings on decryption failure
 
-### Option 2: CLI (Command Line Interface)
+### CLI (Command Line Interface)
 
-The `app.py` CLI wrapper provides three simple commands: `generate-keys`, `encrypt`, and `decrypt`.
-
-#### Generate Keys (with Role)
-```powershell
-# Generate keys for sender (prompts for passphrase)
-python app.py generate-keys --output ./keys --role sender
-
-# Generate keys for receiver
-python app.py generate-keys --output ./keys --role receiver
-```
-
-Keys are automatically organized under `./keys/<role>/` for clean organization.
-
-#### Encrypt a File
-```powershell
-# Encrypt a file (prompts for sender's passphrase)
-python app.py encrypt `
-  --plaintext-file examples/sample_message.txt `
-  --receiver-public-key ./keys/receiver/public_key.pem `
-  --sender-private-key ./keys/sender/private_key_encrypted.json `
-  --output-file examples/message_encrypted.json
-```
-
-#### Decrypt a File
-```powershell
-# Decrypt a file (prompts for receiver's passphrase)
-python app.py decrypt `
-  --ciphertext-file examples/message_encrypted.json `
-  --receiver-private-key ./keys/receiver/private_key_encrypted.json `
-  --sender-public-key ./keys/sender/public_key.pem `
-  --output-file examples/message_decrypted.txt
-```
-
-#### View Help
-```powershell
-python app.py --help
-python app.py generate-keys --help
-python app.py encrypt --help
-python app.py decrypt --help
-```
+The previous `app.py` CLI wrapper has been removed in favor of the GUI and the Python API.
+Use the interactive GUI (`python -m crypto_engine.gui_app`) or the API calls documented below for programmatic usage.
 
 ### Python API (Programmatic Access)
 

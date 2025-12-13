@@ -300,7 +300,7 @@ plaintext = decrypt_file(
 1. Entire file loaded into memory (not streaming)
 2. Passphrase recovery not implemented
 3. No key revocation system
-4. Single-user key management (no key server)
+4. Single-user key storage (no central key server)
 
 ### Supported File Types
 The system treats all files as opaque binary data, supporting:

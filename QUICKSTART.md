@@ -28,9 +28,9 @@ python -m crypto_engine.gui_app
 ```
 
 The GUI provides an intuitive tabbed interface:
-- **Key Management**: Generate role-based key pairs (sender/receiver) and load existing keys
-- **Encrypt & Share**: Select a file, receiver's public key, sender's private key, and encrypt
-- **Receive & Decrypt**: Load encrypted package, provide receiver's private key, and decrypt
+- **Login / Register**: Create a username (generates per-user RSA keypair under `./keys/<username>/`) and login
+- **Encrypt & Share**: Select a file, choose a receiver from the DB, and encrypt
+- **Receive & Decrypt**: Load encrypted package, login as the receiver, and decrypt
 
 All passphrases are securely prompted and masked from display.
 
@@ -98,33 +98,30 @@ This will:
 
 ### Encryption Process
 ```
-Plaintext
-   ↓
-Generate random AES-256 key
-   ↓
-Encrypt with AES-256-GCM → (Ciphertext, IV, Auth Tag)
-   ↓
-Encrypt AES key with RSA-4096-OAEP (Bob's public key)
-   ↓
-Sign ciphertext with RSA-4096-PSS (Alice's private key)
-   ↓
-Package: {ciphertext, iv, auth_tag, encrypted_key, signature}
-   ↓
-Encode all binary data to Base64 for JSON serialization
-   ↓
-JSON Encrypted Package (API-ready)
 ```
-
-### Encrypted Package Format (JSON)
-
-All binary fields are Base64-encoded for safe JSON transmission:
-
-```json
-{
-  "ciphertext": "4szzax0l/BuWafP+1WW4Cn4EpcvLjP2jR6nnUu/EAEk...",
-  "iv": "RImoT328Kobw53sRtuGPKA==",
-  "auth_tag": "s7UAv6g671KP+XPWgJrdXw==",
-  "encrypted_session_key": "yzD9qlk3M4II26v2DBVyYF6Hk0ej...",
+Hybrid-Cryptography-System/
+├── crypto_engine/
+│   ├── __init__.py
+│   ├── gui_app.py                       # Tkinter GUI application
+│   └── hybrid_crypto.py                 # Core engine (Base64 encoding)
+├── examples/
+│   ├── demo.py                          # Main demonstration
+│   ├── sample_message.txt               # Generated test message
+│   ├── message_encrypted.json           # Generated encrypted package (Base64)
+│   └── message_decrypted.txt            # Generated decrypted output
+├── keys/                                # Generated at runtime (per-user directories)
+│   ├── <username>/
+│   │   ├── private_key_encrypted.json
+│   │   └── public_key.pem
+├── scripts/
+│   └── cleanup_docs_and_keys.ps1        # Repository cleanup utility
+├── requirements.txt                     # Dependencies (pycryptodomex)
+├── README.md                            # Complete API documentation
+├── TECHNICAL_OVERVIEW.md                # Cryptographic deep dive
+├── QUICKSTART.md                        # This file
+├── DELIVERABLES.md                      # Requirements checklist
+└── LICENSE                              # MIT License
+```
   "signature": "OTvD84PuADKfWakYib7N9OlnW9xp...",
   "public_key_pem": "LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0K...",
   "algorithm": {
@@ -161,34 +158,31 @@ Decrypt ciphertext with AES-256-GCM and verify auth tag ← Security check!
 Plaintext
 ```
 
-## Key Management
+## User Registration & Keys
 
-### Generating Keys
+Use the GUI `Login / Register` tab to create a username — registration will generate a per-user key directory under `./keys/<username>/` and store the private/public key paths in the local SQLite DB used by the GUI.
+
+Programmatic access is still available via the Python API if needed. You can generate keys directly with `generate_rsa_keypair()` or load private keys with `load_private_key()`; registration via the GUI is recommended for multi-user workflows.
+
+Example (programmatic key generation):
 ```python
 from crypto_engine import generate_rsa_keypair
 
 keys = generate_rsa_keypair(
-    passphrase="your_secure_passphrase",
-    key_size=4096,
-    output_dir="./my_keys"
+   passphrase="your_secure_passphrase",
+   key_size=4096,
+   output_dir="./keys/your_username"
 )
-
-# Private key: encrypted and stored as JSON
-# Public key: plain PEM format
 ```
 
-### Loading Keys
+Load an encrypted private key programmatically:
 ```python
 from crypto_engine import load_private_key
 
 private_key = load_private_key(
-    private_key_file="./my_keys/private_key_encrypted.json",
-    passphrase="your_secure_passphrase"
+   private_key_file="./keys/your_username/private_key_encrypted.json",
+   passphrase="your_secure_passphrase"
 )
-
-# For public key, just read the PEM file
-with open("./my_keys/public_key.pem", "rb") as f:
-    public_key = f.read()
 ```
 
 ## Sharing Public Keys
@@ -251,16 +245,13 @@ Hybrid-Cryptography-System/
 │   ├── sample_message.txt               # Generated test message
 │   ├── message_encrypted.json           # Generated encrypted package (Base64)
 │   └── message_decrypted.txt            # Generated decrypted output
-├── keys/                                # Generated at runtime
-│   ├── sender/
+├── keys/                                # Generated at runtime (per-user directories)
+│   ├── <username>/
 │   │   ├── private_key_encrypted.json
 │   │   └── public_key.pem
-│   └── receiver/
-│       ├── private_key_encrypted.json
-│       └── public_key.pem
 ├── scripts/
 │   └── cleanup_docs_and_keys.ps1        # Repository cleanup utility
-├── requirements.txt                     # Dependencies (pycryptodomex, click)
+├── requirements.txt                     # Dependencies (pycryptodomex)
 ├── README.md                            # Complete API documentation
 ├── TECHNICAL_OVERVIEW.md                # Cryptographic deep dive
 ├── QUICKSTART.md                        # This file
