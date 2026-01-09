@@ -54,7 +54,39 @@ The implementation employs NIST-approved algorithms with proven security propert
 8. [Security Properties](#security-properties)
 9. [Project Structure](#project-structure)
 
+<<<<<<< HEAD
 ---
+=======
+## Project Structure (short)
+
+```
+Hybrid-Cryptography-System/
+├── crypto_engine/
+│   ├── __init__.py
+│   └── hybrid_crypto.py              # Core engine (Base64 encoding)
+├── examples/
+│   ├── demo.py                       # Main demonstration (production-ready)
+│   ├── sample_message.txt            # Generated test message
+│   ├── message_encrypted.json        # Generated encrypted package
+│   └── message_decrypted.txt         # Generated decrypted output
+├── keys/                             # Generated at runtime
+│   ├── sender/
+│   │   ├── private_key_encrypted.json
+│   │   └── public_key.pem
+│   └── receiver/
+│       ├── private_key_encrypted.json
+│       └── public_key.pem
+├── scripts/
+│   └── cleanup_docs_and_keys.ps1     # Repository cleanup utility
+├── requirements.txt                  # Dependencies
+├── README.md                         # This file
+├── TECHNICAL_OVERVIEW.md             # Cryptographic specifications
+├── QUICKSTART.md                     # Getting started guide
+├── DELIVERABLES.md                   # Requirements checklist
+├── LICENSE                           # MIT License
+└── .gitignore                        # Git configuration
+```
+>>>>>>> 602359dc19bb9c4e42cf5bd1cbf4db5d63ad0cab
 
 ## Installation
 
