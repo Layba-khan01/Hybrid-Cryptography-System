@@ -21,12 +21,6 @@ The Hybrid Cryptography System is a secure multi-user cryptographic architecture
 
 ### Cryptographic Foundation
 
-The Hybrid Cryptography System is a battle-hardened encryption framework that combines symmetric and asymmetric cryptography with digital signatures to deliver authenticated encryption with non-repudiation guarantees. The system is designed for secure multi-user workflows where identity verification, data confidentiality, and integrity assurance are non-negotiable.
-
-### Cryptographic Primitives
-
-The implementation employs NIST-approved algorithms with proven security properties:
-
 | Component | Algorithm | Key Size | Mode/Padding | Security Property |
 |-----------|-----------|----------|-------------|---------|
 | **Confidentiality** | AES | 256 bits | GCM (Galois/Counter, NIST SP 800-38D) | Authenticated encryption; 128-bit auth tag |
