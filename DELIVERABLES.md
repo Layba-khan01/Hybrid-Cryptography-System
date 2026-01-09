@@ -211,8 +211,8 @@ Hybrid-Cryptography-System/
 ├── crypto_engine/                          # Core cryptographic module
 │   ├── __init__.py                         # Package initialization
 │   ├── hybrid_crypto.py                    # Main implementation (800+ lines)
-│   ├── db_manager.py                       # Minimal SQLite DB manager for users
-│   └── gui_app.py                          # Tkinter GUI application (380+ lines)
+│   ├── db_manager.py                       # SQLite DB manager for multi-user auth & key lookup
+│   └── gui_app.py                          # Tkinter GUI application (DB-backed, 500+ lines)
 │
 ├── examples/                               # Demonstration & examples
 │   ├── demo.py                             # Production-ready demonstration (350+ lines)
@@ -220,18 +220,22 @@ Hybrid-Cryptography-System/
 │   ├── message_encrypted.json              # Example encrypted package (Base64-encoded)
 │   └── message_decrypted.txt               # Example decrypted output (generated)
 │
-├── keys/                                   # Generated key storage (runtime)
-│   ├── <username>/                          # Per-user key directories (created at registration)
-│   │   ├── private_key_encrypted.json
-│   │   └── public_key.pem
+├── keys/                                   # Generated key storage (runtime, per-user)
+│   └── <username>/
+│       ├── private_key_encrypted.json      # User's encrypted private key
+│       └── public_key.pem                  # User's public key (PEM format)
+│
+├── user_data/                              # Database directory (created at runtime)
+│   └── app.db                              # SQLite DB for user registration & key paths
 │
 ├── scripts/                                # Utility scripts
 │   └── cleanup_docs_and_keys.ps1           # Repository cleanup utility
 │
-├── QUICKSTART.md                           # Getting started guide (360+ lines)
-├── README.md                               # Complete documentation (380+ lines)
-├── TECHNICAL_OVERVIEW.md                   # Deep dive documentation (550+ lines)
-├── DELIVERABLES.md                         # Project requirements checklist (490+ lines)
+├── QUICKSTART.md                           # Getting started guide
+├── README.md                               # Complete documentation
+├── TECHNICAL_OVERVIEW.md                   # Deep dive documentation
+├── DELIVERABLES.md                         # Project requirements checklist
+├── RELEASE_NOTES.md                        # Recent changes and migration guide
 ├── requirements.txt                        # Dependencies (pycryptodomex>=3.18.0)
 ├── LICENSE                                 # MIT License
 └── .gitignore                              # Git ignore configuration
