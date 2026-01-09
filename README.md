@@ -2,7 +2,7 @@
 
 <div align="center">
 
-![Hybrid Cryptography System](docs/images/HYBRID CRYPTOGRAPHY SYSTEM.png)
+![Hybrid Cryptography System](docs/images/banner.png)
 
 [![Python](https://img.shields.io/badge/Python-3.7%2B-blue?style=flat-square)](https://www.python.org/)
 [![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)](LICENSE)
