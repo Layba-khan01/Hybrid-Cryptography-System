@@ -150,8 +150,8 @@ sequenceDiagram
     CryptoEngine->>CryptoEngine: Generate RSA-4096 Key Pair
     CryptoEngine->>CryptoEngine: Derive PBKDF2 Key from Passphrase
     CryptoEngine->>CryptoEngine: Encrypt Private Key (AES-256-GCM)
-    CryptoEngine->>FileSystem: Save private_key_encrypted.json<br/>to keys/&lt;username&gt;/
-    CryptoEngine->>FileSystem: Save public_key.pem<br/>to keys/&lt;username&gt;/
+    CryptoEngine->>FileSystem: Save private_key_encrypted.json<br/>to keys/<username>/
+    CryptoEngine->>FileSystem: Save public_key.pem<br/>to keys/<username>/
     CryptoEngine-->>GUI: Return paths & salt
     deactivate CryptoEngine
 
