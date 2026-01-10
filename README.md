@@ -61,11 +61,7 @@ The Hybrid Cryptography System is a secure multi-user cryptographic architecture
 
 ### Setup
 
-```bash
-git clone https://github.com/Layba-khan01/Hybrid-Cryptography-System.git
-cd Hybrid-Cryptography-System
-pip install -r requirements.txt
-```
+To install the system, clone the repository from GitHub into your local development environment, navigate to the project directory, and install all required dependencies using the package manager. The installation process will download PyCryptodome and other dependencies listed in the requirements file. Once installation completes, the system is ready for use.
 
 ---
 
@@ -73,9 +69,7 @@ pip install -r requirements.txt
 
 ### Graphical Interface (Recommended)
 
-```bash
-python -m crypto_engine.gui_app
-```
+Launch the graphical interface by executing the GUI application module. The application window will open with a user-friendly interface designed for secure communication without requiring command-line expertise.
 
 **Three-Tab Workflow:**
 
@@ -85,51 +79,11 @@ python -m crypto_engine.gui_app
 
 ### Python API (Programmatic)
 
-```python
-from crypto_engine import (
-    generate_rsa_keypair,
-    encrypt_file,
-    decrypt_file,
-    load_private_key,
-    save_encrypted_file,
-    load_encrypted_file
-)
-
-# Generate keypairs
-alice_keys = generate_rsa_keypair(passphrase="alice_pass", output_dir="./keys/alice")
-bob_keys = generate_rsa_keypair(passphrase="bob_pass", output_dir="./keys/bob")
-
-# Encrypt (Alice → Bob)
-encrypted_pkg = encrypt_file(
-    plaintext_path="./documents/secret.pdf",
-    receiver_public_key_pem=bob_keys['public_key_pem'].encode(),
-    sender_private_key_pem=alice_keys['private_key_pem'].encode()
-)
-save_encrypted_file(encrypted_pkg, "./transmit/secret.json")
-
-# Decrypt (Bob receives)
-bob_private_key = load_private_key(
-    bob_keys['private_key_file'],
-    passphrase="bob_pass"
-)
-encrypted_pkg = load_encrypted_file("./transmit/secret.json")
-
-try:
-    plaintext = decrypt_file(
-        encrypted_package=encrypted_pkg,
-        receiver_private_key_pem=bob_private_key,
-        sender_public_key_pem=alice_keys['public_key_pem'].encode()
-    )
-    print(f"✓ Decryption successful. Recovered {len(plaintext)} bytes.")
-except ValueError as e:
-    print(f"⚠ TAMPERING DETECTED: {e}")
-```
+Developers can integrate the system programmatically by importing the cryptographic functions from the core module. The typical workflow involves generating RSA-4096 keypairs for both parties, encrypting a file using the recipient's public key while signing with the sender's private key, transmitting the encrypted package, and then decrypting and verifying the file on the receiving end. The system automatically detects tampering attempts and raises security alerts if any verification step fails. All operations are accessible through well-documented functions that handle the complete hybrid encryption pipeline internally.
 
 ### Demonstration
 
-```bash
-python examples/demo.py
-```
+To understand the complete encryption and decryption workflow, execute the demonstration script included in the examples directory. This script performs a full end-to-end encryption scenario with multiple verification checkpoints, showing how the system protects against tampering and validates authenticity.
 
 ---
 
@@ -143,24 +97,9 @@ python examples/demo.py
 | **Encrypt & Share** | Encrypt file for recipient | File selection → AES-256-GCM encryption → RSA-4096-OAEP key wrap → RSA-4096-PSS signature |
 | **Receive & Decrypt** | Decrypt and verify received file | JSON load → RSA-PSS signature verification → RSA-4096-OAEP key unwrap → AES-256-GCM decryption |
 
-### Python API Workflows
+### Advanced Python API Workflows
 
-```python
-# Advanced: Direct key derivation for custom workflows
-from crypto_engine import derive_key_from_passphrase
-
-key, salt = derive_key_from_passphrase("my_passphrase")  # Returns 32-byte key + random salt
-key, _ = derive_key_from_passphrase("my_passphrase", salt=salt)  # Deterministic with known salt
-
-# File metadata inspection without decryption
-from crypto_engine import get_file_metadata
-metadata = get_file_metadata(encrypted_pkg)
-print(f"Original: {metadata['original_filename']} ({metadata['original_size']} bytes)")
-
-# Integrity verification
-from crypto_engine import verify_package_integrity
-is_valid = verify_package_integrity(encrypted_pkg)  # Validates all required fields
-```
+For specialized use cases, developers can access lower-level functions to derive encryption keys from passphrases using PBKDF2, inspect file metadata from encrypted packages without performing decryption, and validate package integrity before processing. These functions enable custom workflows such as key management automation, batch processing, and integration with external systems while maintaining security guarantees.
 
 ---
 
