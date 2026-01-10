@@ -24,6 +24,7 @@ python -m crypto_engine.gui_app
 Quick steps (First Flight):
 
 ```mermaid
+%%{init: {'themeVariables': { 'primaryTextColor': '#000000', 'secondaryTextColor': '#000000' }}}%%
 flowchart LR
 	R["Register (Username + Passphrase)"] -->|Auto-login| L["Logged-in User State"]
 	L --> B["Browse File to Encrypt"]

@@ -37,6 +37,7 @@ The Hybrid Cryptography System combines **symmetric encryption** (AES-256-GCM), 
 The following diagram illustrates the complete encryption workflow from plaintext to a Base64-encoded JSON package ready for secure transmission:
 
 ```mermaid
+%%{init: {'themeVariables': { 'primaryTextColor': '#000000', 'secondaryTextColor': '#000000' }}}%%
 graph LR
     A["📄 Plaintext File<br/>(Any Type)"] -->|Read| B["📊 Plaintext Bytes<br/>(Binary Data)"]
     B -->|Random 256-bit| C["🔑 Generate Session Key<br/>(Ks)"]
@@ -83,6 +84,7 @@ graph LR
 The following diagram shows the verification and decryption workflow, implementing strict fail-closed design:
 
 ```mermaid
+%%{init: {'themeVariables': { 'primaryTextColor': '#000000', 'secondaryTextColor': '#000000' }}}%%
 graph LR
     A["📦 Received JSON Package"] -->|Parse Base64| B["🔓 Extract Components<br/>C, IV, T, Ks_enc, Sig"]
     B -->|Sender Pub Key| C{{"🔍 Verify<br/>RSA-PSS Signature<br/>on C"}}
@@ -135,6 +137,7 @@ graph LR
 The following sequence diagram illustrates the interaction between GUI, DBManager, and file system during user registration and login:
 
 ```mermaid
+%%{init: {'themeVariables': { 'primaryTextColor': '#000000', 'secondaryTextColor': '#000000' }}}%%
 sequenceDiagram
     participant User
     participant GUI
@@ -363,6 +366,7 @@ The system maintains the following invariants:
 ### End-to-End Data Flow
 
 ```mermaid
+%%{init: {'themeVariables': { 'primaryTextColor': '#000000', 'secondaryTextColor': '#000000' }}}%%
 graph TB
     subgraph User_A["👤 User A (Sender)"]
         A1["Original File<br/>plaintext.pdf"]

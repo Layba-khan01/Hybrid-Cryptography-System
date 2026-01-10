@@ -110,6 +110,7 @@ All binary values are Base64-encoded to ensure JSON/API safety and compatibility
 #### Sequence Diagram (Sender ↔ Receiver Interactions)
 
 ```mermaid
+%%{init: {'themeVariables': { 'primaryTextColor': '#000000', 'secondaryTextColor': '#000000' }}}%%
 sequenceDiagram
   participant Sender
   participant SenderFS as Sender Filesystem
