@@ -243,6 +243,32 @@ Hybrid-Cryptography-System/
 
 ---
 
+## Milestones (Project Evolution)
+
+The project evolved from a CLI prototype into a DB-backed desktop application with persistent identities and safer serialization. The timeline below documents major milestones and completed work.
+
+```mermaid
+gantt
+  title Hybrid Cryptography System - Project Milestones
+  dateFormat  YYYY-MM-DD
+  section Prototype
+  CLI Prototype                         :done, cli, 2022-12-01, 2023-03-01
+  Single-user GUI Prototype             :done, gui1, 2023-03-02, 2023-06-01
+  section Refactor
+  Base64 Serialization Migration        :done, base64, 2024-01-01, 2024-02-01
+  SQLite DB Integration                 :done, db, 2024-02-02, 2024-05-01
+  Multi-user GUI Implementation         :done, gui2, 2024-05-02, 2024-10-01
+  Documentation & Testing               :done, docs, 2024-10-02, 2025-11-30
+  section Release
+  Version 1.0.0 — Identity & Persistence Update :done, v1, 2025-12-01, 2026-01-01
+```
+
+Notes:
+- Each milestone corresponds to implemented features in `crypto_engine/` (see `hybrid_crypto.py`, `db_manager.py`, `gui_app.py`).
+- The Base64 migration and DB integration are complete and verified via `examples/demo.py` and the GUI workflows.
+
+---
+
 ## Recent Refactoring: Base64 Encoding for JSON Serialization
 
 **Status**: ✅ COMPLETE

@@ -63,32 +63,75 @@ Store: {iv, ciphertext, auth_tag, salt} → JSON file
 ```
 
 ### Step 2: File Encryption (Sender)
-```
+
+```text
 Plaintext File
-    ↓
+  ↓
 [1] Generate random session key (Ks): 32 bytes
-    ↓
-[2] Encrypt with AES-256-GCM
-    Input: Plaintext + Session Key (Ks) + Random IV
-    Output: Ciphertext (C), IV, Authentication Tag (T)
-    ↓
+  ↓
+[2] Encrypt with AES-256-GCM (AEAD)
+  Input: Plaintext + Session Key (Ks) + Random IV (16 bytes)
+  Output: Ciphertext (C), IV, Authentication Tag (T)
+  ↓
 [3] Encrypt session key with RSA-4096-OAEP
-    Input: Session Key (Ks) + Receiver's Public Key
-    Output: Encrypted Session Key (Ks_enc)
-    ↓
+  Input: Session Key (Ks) + Receiver's Public Key
+  Output: Encrypted Session Key (Ks_enc)
+  ↓
 [4] Sign ciphertext with RSA-4096-PSS
-    Input: SHA256(Ciphertext) + Sender's Private Key
-    Output: Signature (Sig)
-    ↓
-Package: {
-    ciphertext: C (hex),
-    iv: IV (hex),
-    auth_tag: T (hex),
-    encrypted_session_key: Ks_enc (hex),
-    signature: Sig (hex),
-    metadata: {filename, size, hash_algorithm}
+  Input: SHA256(Ciphertext) + Sender's Private Key
+  Output: Signature (Sig)
+  ↓
+Package (JSON with Base64-encoded binary fields):
+```
+
+```json
+{
+  "ciphertext": "<Base64-encoded AES-256-GCM ciphertext>",
+  "iv": "<Base64-encoded IV (16 bytes)>",
+  "auth_tag": "<Base64-encoded GCM auth tag (16 bytes)>",
+  "encrypted_session_key": "<Base64-encoded RSA-OAEP encrypted session key>",
+  "signature": "<Base64-encoded RSA-PSS signature of ciphertext>",
+  "public_key_pem": "<Base64-encoded sender public key PEM (optional)>",
+  "algorithm": {
+  "encryption": "AES-256-GCM",
+  "key_exchange": "RSA-4096-OAEP",
+  "signature": "RSA-4096-PSS"
+  },
+  "metadata": {
+  "original_filename": "document.pdf",
+  "original_size": 102400,
+  "hash_algorithm": "SHA256"
+  }
 }
 ```
+
+All binary values are Base64-encoded to ensure JSON/API safety and compatibility with typical web and storage transports.
+
+#### Sequence Diagram (Sender ↔ Receiver Interactions)
+
+```mermaid
+sequenceDiagram
+  participant Sender
+  participant SenderFS as Sender Filesystem
+  participant Receiver
+  participant ReceiverFS as Receiver Filesystem
+  participant Network
+
+  Sender->>SenderFS: Read plaintext file
+  Sender->>Sender: Generate 32-byte session key (Ks)
+  Sender->>Sender: AES-256-GCM encrypt plaintext -> C, IV, T
+  Sender->>Receiver: Encrypt Ks with Receiver's public key (RSA-OAEP) -> Ks_enc
+  Sender->>Sender: Sign ciphertext (SHA256(C)) using Sender's private key (RSA-PSS) -> Sig
+  Sender->>Network: Send JSON package {ciphertext=C, iv, auth_tag=T, encrypted_session_key=Ks_enc, signature=Sig, public_key_pem=sender_pub}
+
+  Network->>ReceiverFS: Deliver JSON package
+  Receiver->>Receiver: Verify signature using Sender's public key (reject on failure)
+  Receiver->>Receiver: Decrypt Ks_enc with Receiver's private key (RSA-OAEP) -> Ks
+  Receiver->>Receiver: Decrypt C with AES-256-GCM using Ks and IV -> plaintext (verify auth tag)
+  Receiver->>ReceiverFS: Save recovered plaintext
+```
+
+The sequence diagram emphasizes that signature verification is performed before any attempt to decrypt the session key or ciphertext (fail-closed behavior).
 
 ### Step 3: File Decryption (Receiver)
 ```

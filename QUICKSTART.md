@@ -15,11 +15,31 @@ pip install -r requirements.txt
 
 ## GUI Quick Start
 
+Start the desktop GUI. The application enforces a Login / Register step before encryption/decryption actions are enabled.
+
 ```bash
 python -m crypto_engine.gui_app
 ```
 
-**Tabs:** Login/Register (create account), Encrypt & Share (select receiver), Receive & Decrypt (load encrypted package)
+Quick steps (First Flight):
+
+```mermaid
+flowchart LR
+	R["Register (Username + Passphrase)"] -->|Auto-login| L["Logged-in User State"]
+	L --> B["Browse File to Encrypt"]
+	B --> S["Select Recipient from DB (combobox)"]
+	S --> E["Encrypt & Save (Base64 JSON Package)"]
+	E -->|Optional| T["Transmit via Email/Cloud"]
+	classDef gray fill:#f3f4f6,stroke:#ddd;
+	class R,L,B,S,E,T gray;
+```
+
+Notes:
+- The GUI requires registration or login; Encrypt & Share and Receive & Decrypt tabs are disabled until authentication completes.
+- Registration generates a per-user directory under `./keys/<username>/` and stores key paths in the local SQLite DB at `user_data/app.db`.
+- On first login after registration the GUI attempts to load and cache the user's private key (requires passphrase to decrypt when used for signing).
+
+Interface walkthrough image: [docs/images/gui_main.png](docs/images/gui_main.png)
 
 ## Python API
 

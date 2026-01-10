@@ -1,7 +1,12 @@
-# Release Notes: DB-Backed Multi-User GUI & Documentation Updates
+# Release Notes — Version 1.0.0: Identity & Persistence Update
 
 ## Summary
-Refactored the Hybrid Cryptography System GUI to support multi-user workflows via SQLite-backed authentication and key management. Removed CLI/`app.py` references and simplified documentation to reflect the new architecture.
+Version **1.0.0** (Identity & Persistence Update) formalizes the transition from a CLI-focused prototype to a DB-backed desktop application with persistent user identities and safer serialization.
+
+Key highlights:
+- Multi-user SQLite registry (`user_data/app.db`) for username-based identity persistence and key-path lookup.
+- Per-user key directories under `./keys/<username>/` created at registration.
+- Migration from hexadecimal serialization to **Base64** for every binary field in the encrypted JSON package (ciphertext, IV, auth_tag, encrypted_session_key, signature). This improves API compatibility and avoids text-encoding pitfalls.
 
 ## Major Changes
 
