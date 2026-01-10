@@ -251,16 +251,13 @@ The project evolved from a CLI prototype into a DB-backed desktop application wi
 gantt
   title Hybrid Cryptography System - Project Milestones
   dateFormat  YYYY-MM-DD
-  section Prototype
-  CLI Prototype                         :done, cli, 2022-12-01, 2023-03-01
-  Single-user GUI Prototype             :done, gui1, 2023-03-02, 2023-06-01
-  section Refactor
-  Base64 Serialization Migration        :done, base64, 2024-01-01, 2024-02-01
-  SQLite DB Integration                 :done, db, 2024-02-02, 2024-05-01
-  Multi-user GUI Implementation         :done, gui2, 2024-05-02, 2024-10-01
-  Documentation & Testing               :done, docs, 2024-10-02, 2025-11-30
-  section Release
-  Version 1.0.0 — Identity & Persistence Update :done, v1, 2025-12-01, 2026-01-01
+  section Timeline
+  Project Start                          :done, start, 2025-12-01, 2025-12-01
+  Core Engine (hybrid_crypto.py)         :done, core, 2025-12-01, 2025-12-15
+  SQLite & DBManager Integration         :done, db, 2025-12-16, 2025-12-28
+  Multi-user GUI Refactor                 :done, gui, 2025-12-29, 2026-01-05
+  Final Documentation & Refactoring      :done, docs, 2026-01-06, 2026-01-10
+  Version 1.0.0 Release (Identity & Persistence) :done, v1, 2026-01-10, 1d
 ```
 
 Notes:
@@ -355,7 +352,7 @@ Notes:
 - Step 3: Encrypt key with RSA-4096-OAEP ✓
 - Step 4: Sign with RSA-4096-PSS ✓
 - Output: Dictionary with all components ✓
-- Output format: Hex-encoded strings, JSON-serializable ✓
+- Output format: Base64-encoded strings, JSON-serializable ✓
 - Implementation: `crypto_engine/hybrid_crypto.py` lines 265-347 ✓
 
 ### ✅ decrypt_file(encrypted_data, receiver_private_key_pem, sender_public_key_pem)

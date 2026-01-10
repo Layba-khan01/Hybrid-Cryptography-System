@@ -1,7 +1,9 @@
 # Release Notes — Version 1.0.0: Identity & Persistence Update
 
+**Release Date:** 2026-01-10
+
 ## Summary
-Version **1.0.0** (Identity & Persistence Update) formalizes the transition from a CLI-focused prototype to a DB-backed desktop application with persistent user identities and safer serialization.
+Version **1.0.0** (Identity & Persistence Update), released on **2026-01-10**, formalizes the transition from a CLI-focused prototype to a DB-backed desktop application with persistent user identities and safer serialization.
 
 Key highlights:
 - Multi-user SQLite registry (`user_data/app.db`) for username-based identity persistence and key-path lookup.
