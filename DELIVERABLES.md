@@ -248,7 +248,7 @@ Hybrid-Cryptography-System/
 The project evolved from a CLI prototype into a DB-backed desktop application with persistent identities and safer serialization. The timeline below documents major milestones and completed work.
 
 ```mermaid
-%%{init: {'themeVariables': { 'primaryTextColor': '#000000', 'secondaryTextColor': '#000000', 'tertiaryTextColor': '#000000' }}}%%
+%%{init: {'themeVariables': { 'primaryTextColor': '#000000', 'secondaryTextColor': '#000000', 'tertiaryTextColor': '#000000', 'taskTextColor': '#000000', 'taskTextLightColor': '#000000', 'textColor': '#000000', 'fontColor': '#000000' }}}%%
 gantt
   title Hybrid Cryptography System - Project Milestones
   dateFormat  YYYY-MM-DD
