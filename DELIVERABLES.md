@@ -248,9 +248,9 @@ Hybrid-Cryptography-System/
 The project evolved from a CLI prototype into a DB-backed desktop application with persistent identities and safer serialization. The timeline below documents major milestones and completed work.
 
 ```mermaid
-%%{init: {'themeVariables': { 'primaryColor': '#333', 'primaryBorderColor': '#333', 'primaryTextColor': '#000000', 'secondaryTextColor': '#000000', 'tertiaryTextColor': '#000000', 'taskTextColor': '#ffffff', 'taskTextLightColor': '#ffffff', 'cScale0': '#333', 'cScale1': '#555' }}}%%
+%%{init: {'themeVariables': { 'primaryColor': '#2c3e50', 'primaryTextColor': '#ffffff', 'primaryBorderColor': '#000000', 'lineColor': '#34495e', 'secondBkgColor': '#34495e', 'secondTextColor': '#ffffff', 'tertiaryColor': '#3498db' }}}%%
 gantt
-  title Hybrid Cryptography System - Project Milestones
+  title Hybrid Cryptography System - Milestones (v1.0.0)
   dateFormat  YYYY-MM-DD
   section Timeline
   Project Start                          :done, start, 2025-12-01, 2025-12-01
@@ -258,7 +258,7 @@ gantt
   SQLite & DBManager Integration         :done, db, 2025-12-16, 2025-12-28
   Multi-user GUI Refactor                 :done, gui, 2025-12-29, 2026-01-05
   Final Documentation & Refactoring      :done, docs, 2026-01-06, 2026-01-10
-  Version 1.0.0 Release (Identity & Persistence) :done, v1, 2026-01-10, 1d
+  Version 1.0.0 Release                  :done, v1, 2026-01-10, 1d
 ```
 
 Notes:

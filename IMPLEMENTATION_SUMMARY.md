@@ -13,9 +13,9 @@ This document is the canonical, up-to-date implementation summary for the Hybrid
 ## Project Timeline (Authoritative)
 
 ```mermaid
-%%{init: {'themeVariables': { 'primaryColor': '#333', 'primaryBorderColor': '#333', 'primaryTextColor': '#000000', 'secondaryTextColor': '#000000', 'tertiaryTextColor': '#000000', 'taskTextColor': '#ffffff', 'taskTextLightColor': '#ffffff', 'cScale0': '#333', 'cScale1': '#555' }}}%%
+%%{init: {'themeVariables': { 'primaryColor': '#2c3e50', 'primaryTextColor': '#ffffff', 'primaryBorderColor': '#000000', 'lineColor': '#34495e', 'secondBkgColor': '#34495e', 'secondTextColor': '#ffffff', 'tertiaryColor': '#3498db' }}}%%
 gantt
-  title Implementation Timeline
+  title Implementation Timeline - Dec 2025 to Jan 2026
   dateFormat  YYYY-MM-DD
   section Implementation
   Project Start                          :done, start, 2025-12-01, 2025-12-01
@@ -23,7 +23,7 @@ gantt
   SQLite & DBManager Integration         :done, db, 2025-12-16, 2025-12-28
   Multi-user GUI Refactor                :done, gui, 2025-12-29, 2026-01-05
   Final Documentation & Refactoring      :done, docs, 2026-01-06, 2026-01-10
-  Release 1.0.0                           :done, v1, 2026-01-10, 1d
+  Release 1.0.0                          :done, v1, 2026-01-10, 1d
 ```
 
 ---
