@@ -13,7 +13,7 @@ This document is the canonical, up-to-date implementation summary for the Hybrid
 ## Project Timeline (Authoritative)
 
 ```mermaid
-%%{init: {'themeVariables': { 'primaryTextColor': '#000000', 'secondaryTextColor': '#000000', 'tertiaryTextColor': '#000000', 'taskTextColor': '#000000', 'taskTextLightColor': '#000000', 'textColor': '#000000', 'fontColor': '#000000' }}}%%
+%%{init: {'themeVariables': { 'primaryColor': '#333', 'primaryBorderColor': '#333', 'primaryTextColor': '#000000', 'secondaryTextColor': '#000000', 'tertiaryTextColor': '#000000', 'taskTextColor': '#ffffff', 'taskTextLightColor': '#ffffff', 'cScale0': '#333', 'cScale1': '#555' }}}%%
 gantt
   title Implementation Timeline
   dateFormat  YYYY-MM-DD
