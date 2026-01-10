@@ -17,7 +17,15 @@
 
 ## Executive Summary
 
-The Hybrid Cryptography System is a secure multi-user cryptographic architecture that combines symmetric (AES-256-GCM) and asymmetric (RSA-4096-OAEP/PSS) cryptography with identity management (SQLite + PBKDF2) to deliver end-to-end encrypted communication with non-repudiation guarantees. The system treats all files as opaque byte streams, enabling **binary-agnostic processing** across any file format without format-specific assumptions.
+**The Hybrid Cryptography System** delivers end-to-end encrypted communication through a hardened reference implementation combining symmetric and asymmetric cryptography with identity management.
+
+### Value Proposition
+
+- **Confidentiality + Integrity:** AES-256-GCM authenticated encryption prevents both eavesdropping and tampering
+- **Non-Repudiation:** RSA-4096-PSS digital signatures prove sender identity and prevent denial of responsibility
+- **Multi-User Isolation:** SQLite + PBKDF2 identity layer provides per-user key management with 100,000 iteration brute-force resistance
+
+The system treats all files as opaque binary streams, enabling **format-agnostic encryption** across any file type without vendor lock-in or format-specific parsing.
 
 ### Cryptographic Foundation
 
@@ -120,53 +128,33 @@ For specialized use cases, developers can access lower-level functions to derive
 
 ## JSON Package Schema
 
-All encrypted packages use Base64-encoded JSON (RFC 4648) for universal API/database compatibility:
+All encrypted packages use Base64-encoded JSON (RFC 4648) for universal API/database compatibility. The package includes all necessary components for the receiver to verify authenticity and decrypt the plaintext:
 
-```json
-{
-  "algorithm": {
-    "encryption": "AES-256-GCM",
-    "key_exchange": "RSA-4096-OAEP",
-    "signature": "RSA-4096-PSS",
-    "key_derivation": "PBKDF2-HMAC-SHA256"
-  },
-  "ciphertext": "C7K9mL2p5Q...",
-  "iv": "x3hJ8kL2M9+...",
-  "auth_tag": "9D2kL8mP3q...",
-  "encrypted_session_key": "YbC7dE9fG2...",
-  "signature": "JqK8lM3nO5...",
-  "public_key_pem": "LS0tLS1CRUdJTi...",
-  "metadata": {
-    "original_filename": "confidential.pdf",
-    "original_size": 1048576,
-    "mime_type": "application/pdf",
-    "file_extension": "pdf",
-    "file_type_category": "document"
-  }
-}
-```
+| Field | Content | Encoding | Purpose |
+|-------|---------|----------|----------|
+| `algorithm` | Crypto identifiers (AES-256-GCM, RSA-4096-OAEP/PSS) | JSON object | Algorithm transparency |
+| `ciphertext` | Encrypted plaintext | Base64 | Confidentiality |
+| `iv` | 96-bit initialization vector | Base64 | Nonce for AES-GCM |
+| `auth_tag` | 128-bit authentication tag | Base64 | Ciphertext integrity verification |
+| `encrypted_session_key` | AES key wrapped with RSA-4096-OAEP | Base64 | Recipient-only decryption |
+| `signature` | Ciphertext signed with RSA-4096-PSS | Base64 | Authenticity + non-repudiation |
+| `public_key_pem` | Sender's RSA-4096 public key | Base64 string | Signature verification (no PKI needed) |
+| `metadata` | Filename, size, MIME type, category | JSON object | File recovery context |
 
-**Field Descriptions:**
-- `ciphertext`: AES-256-GCM encrypted plaintext (Base64)
-- `iv`: 96-bit initialization vector, randomized per encryption (Base64)
-- `auth_tag`: 128-bit authentication tag validating ciphertext integrity (Base64)
-- `encrypted_session_key`: 256-bit AES key wrapped with RSA-4096-OAEP (Base64)
-- `signature`: Ciphertext signed with RSA-4096-PSS using sender's private key (Base64)
-- `public_key_pem`: Sender's RSA-4096 public key in PEM format, Base64-encoded
-- `metadata`: Unencrypted but authenticated through RSA-PSS signature
+**Encryption Pipeline (Sender):**
+1. Generate random 256-bit session key
+2. Encrypt plaintext with AES-256-GCM + random IV → ciphertext + auth_tag
+3. Wrap session key with recipient's RSA-4096 public key → encrypted_session_key
+4. Sign ciphertext with sender's RSA-4096 private key → signature
+5. Base64-encode all binary fields and serialize to JSON
 
-**Encryption Sequence (Alice → Bob):**
-1. **Session Key:** Generate 32-byte random key (Ks)
-2. **AES-256-GCM:** Encrypt plaintext with Ks + random 96-bit IV → (ciphertext, auth_tag)
-3. **RSA-4096-OAEP:** Wrap Ks with Bob's public key → encrypted_session_key
-4. **RSA-4096-PSS:** Sign ciphertext with Alice's private key → signature
-5. **JSON Serialization:** Base64-encode all binary fields
-
-**Decryption Sequence (Bob receives):**
-1. **RSA-4096-PSS Verification:** Verify signature with Alice's embedded public key
-2. **RSA-4096-OAEP Unwrap:** Decrypt session key with Bob's private key
-3. **AES-256-GCM Decryption:** Decrypt ciphertext + verify auth_tag
-4. **Tampering Detection:** Fail fast if any verification step fails
+**Decryption Pipeline (Receiver - Fail-Closed Design):**
+1. Extract and Base64-decode components
+2. Verify RSA-4096-PSS signature using sender's embedded public key → **GATE 1**
+3. Unwrap session key using receiver's RSA-4096 private key
+4. Decrypt ciphertext using session key + IV with AES-256-GCM
+5. Verify GCM authentication tag → **GATE 2**
+6. Release plaintext only if both gates pass
 
 ---
 
@@ -300,29 +288,31 @@ Hybrid-Cryptography-System/
 ### Common Questions
 
 **Q: How do I start using the system?**  
-A: Run `python -m crypto_engine.gui_app` to launch the GUI. Register a user account, then use the Encrypt & Share tab.
+A: Launch the graphical interface to register a user account. The system automatically generates an RSA-4096 keypair and stores it in encrypted form. After registration, use the Encrypt & Share tab to send encrypted files to other registered users.
 
 **Q: What if I lose my passphrase?**  
-A: The private key cannot be recovered without the correct passphrase (PBKDF2 design). You must regenerate keys.
+A: The private key cannot be recovered without the correct passphrase. PBKDF2 is intentionally slow to prevent brute-force attacks. You must regenerate your keypair with a new passphrase.
 
 **Q: Can I use the same passphrase for multiple users?**  
-A: Technically yes, but not recommended. Each user gets a unique random salt; same passphrase + different salt = different hashes.
+A: Each user receives a unique random salt during registration. Even with the same passphrase, different salts produce different hashes, so each user has independent credentials.
 
 **Q: What happens if a file is corrupted during transmission?**  
-A: Decryption fails with "Authentication tag verification failed" error—the system detects any bit-flip.
+A: The GCM authentication tag validates ciphertext integrity. Any bit-flip causes tag verification to fail, and the system alerts the user to tampering rather than returning corrupted plaintext.
 
 **Q: How do I share a public key with another user?**  
-A: Public keys are embedded in encrypted packages automatically. No separate key distribution needed.
+A: Public keys are automatically embedded in every encrypted package. The receiver can verify the sender without external key distribution or a PKI infrastructure.
 
 ### Troubleshooting
 
 | Issue | Cause | Solution |
 |-------|-------|----------|
-| GUI won't start | Python < 3.7 or PyCryptodome missing | Check `python --version` and `pip install -r requirements.txt` |
-| Signature verification failed | Wrong sender public key or tampered file | Verify sender identity; check file wasn't modified |
-| Authentication tag verification failed | Ciphertext corrupted or wrong receiver key | Re-download file; verify transmission integrity |
-| User already exists | Username taken | Choose a different username |
-| Passphrase incorrect error | Wrong passphrase entered | Re-enter passphrase carefully (case-sensitive) |
+| GUI fails to launch | Python environment incomplete or dependencies missing | Verify Python 3.7+ and run package installation again |
+| Signature verification failed | Wrong sender or tampered message | Contact sender to verify identity; request retransmission |
+| Authentication tag verification failed | File corrupted during transmission | Re-download or request file be resent |
+| User already exists | Username already registered | Choose a unique username |
+| Passphrase incorrect | Wrong passphrase entered during login | Re-enter passphrase carefully (case-sensitive); if forgotten, create new account |
+| Cannot find receiver in list | Receiver account not registered | Ask receiver to register and confirm username |
+| Private key file missing | Key storage corruption | Delete account and register again; private keys cannot be recovered |
 
 ### Documentation
 
@@ -334,12 +324,12 @@ A: Public keys are embedded in encrypted packages automatically. No separate key
 
 ### Reporting Issues
 
-Please report bugs or feature requests via GitHub Issues:
-- Include Python version (`python --version`)
-- Include PyCryptodome version (`pip show pycryptodomex`)
-- Provide error message and stack trace
-- Describe steps to reproduce
-- Include OS and shell information (Windows PowerShell, Linux bash, macOS zsh)
+Please report bugs or feature requests via GitHub Issues. Include:
+- System information (OS: Windows/Linux/macOS, Python version, system architecture)
+- Description of the issue and steps to reproduce
+- Error messages or unexpected behavior observed
+- Whether the issue is reproducible or intermittent
+- Any environment details (firewall, antivirus, corporate proxy, etc.)
 
 ---
 
