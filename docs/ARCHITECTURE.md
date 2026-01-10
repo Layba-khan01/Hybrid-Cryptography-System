@@ -38,7 +38,7 @@ The following diagram illustrates the complete encryption workflow from plaintex
 
 ```mermaid
 %%{init: {'themeVariables': { 'primaryTextColor': '#000000', 'secondaryTextColor': '#000000' }}}%%
-graph LR
+graph TD
     A["📄 Plaintext File<br/>(Any Type)"] -->|Read| B["📊 Plaintext Bytes<br/>(Binary Data)"]
     B -->|Random 256-bit| C["🔑 Generate Session Key<br/>(Ks)"]
     C -->|AES-256-GCM<br/>+ IV + Auth| D["🔒 AES Encryption<br/>C, IV, Auth_Tag"]
@@ -85,7 +85,7 @@ The following diagram shows the verification and decryption workflow, implementi
 
 ```mermaid
 %%{init: {'themeVariables': { 'primaryTextColor': '#000000', 'secondaryTextColor': '#000000' }}}%%
-graph LR
+graph TD
     A["📦 Received JSON Package"] -->|Parse Base64| B["🔓 Extract Components<br/>C, IV, T, Ks_enc, Sig"]
     B -->|Sender Pub Key| C{{"🔍 Verify<br/>RSA-PSS Signature<br/>on C"}}
     C -->|❌ FAIL| D["🚨 TAMPERING DETECTED<br/>Alert & Reject"]

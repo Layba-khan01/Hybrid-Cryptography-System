@@ -25,7 +25,7 @@ Quick steps (First Flight):
 
 ```mermaid
 %%{init: {'themeVariables': { 'primaryTextColor': '#000000', 'secondaryTextColor': '#000000' }}}%%
-flowchart LR
+flowchart TD
 	R["Register (Username + Passphrase)"] -->|Auto-login| L["Logged-in User State"]
 	L --> B["Browse File to Encrypt"]
 	B --> S["Select Recipient from DB (combobox)"]
@@ -133,20 +133,6 @@ print(f"✓ Key derivation is deterministic")
 print("✓ System is ready!")
 ```
 
-## Performance Tips
-
-- **Key generation** takes 5-15 seconds (normal, don't interrupt)
-- **Encrypting small files** is fast (< 100ms)
-- **Signing** takes 1-2 seconds (RSA-PSS is cryptographically secure)
-- **PBKDF2 derivation** takes ~0.5-1 second (security by design)
-
-## Getting Help
-
-- Check **README.md** for API reference
-- Review **TECHNICAL_OVERVIEW.md** for cryptographic details
-- Run **examples/demo.py** with verbose output
-- Check error messages - they're descriptive!
-
 ## Example Output
 
 ```
@@ -173,6 +159,21 @@ HYBRID CRYPTOGRAPHY SYSTEM - DEMONSTRATION
 [STEP 5] VERIFICATION
 ✓ SUCCESS: Decrypted message matches original plaintext exactly!
 ```
+
+## Performance Tips
+
+- **Key generation** takes 5-15 seconds (normal, don't interrupt)
+- **Encrypting small files** is fast (< 100ms)
+- **Signing** takes 1-2 seconds (RSA-PSS is cryptographically secure)
+- **PBKDF2 derivation** takes ~0.5-1 second (security by design)
+
+## Getting Help
+
+- Check **README.md** for API reference
+- Review **TECHNICAL_OVERVIEW.md** for cryptographic details
+- Run **examples/demo.py** with verbose output
+- Check error messages - they're descriptive!
+
 
 ---
 

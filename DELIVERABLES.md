@@ -153,8 +153,9 @@
 - Security best practices
 - Troubleshooting section
 - File structure reference
-- Performance tips
+- Testing the setup
 - Example output
+- Performance tips
 - Getting help resources
 
 ---
